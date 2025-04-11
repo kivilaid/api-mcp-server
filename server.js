@@ -1763,7 +1763,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.2",
+        version: "0.0.5",
       },
       {
         capabilities: {
@@ -1788,7 +1788,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/' + this.server.getClientVersion();
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.5';
     
     return headers;
   }
