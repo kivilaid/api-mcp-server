@@ -1,0 +1,2100 @@
+#!/usr/bin/env node
+
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from "axios";
+import { config as dotenvConfig } from "dotenv";
+import {
+  ListToolsRequestSchema,
+  CallToolRequestSchema,
+  Tool,
+} from "@modelcontextprotocol/sdk/types.js";
+
+// Load environment variables
+dotenvConfig();
+
+// Define tool and security scheme types
+interface OpenApiTool extends Tool {
+  method: string;
+  path: string;
+  security: any[];
+}
+
+interface SecurityScheme {
+  type: string;
+  description?: string;
+  name?: string;
+  in?: string;
+  scheme?: string;
+}
+
+// Define tool schemas
+const TOOLS: OpenApiTool[] = [
+  {
+    "name": "billing_getCatalogItemListV1",
+    "description": "This endpoint retrieves a list of catalog items available for order. \n\nPrices in catalog items is displayed as cents (without floating point), e.g: float `17.99` is displayed as integer `1799`.",
+    "method": "GET",
+    "path": "/api/billing/v1/catalog",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "billing_createNewServiceOrderV1",
+    "description": "This endpoint creates a new service order. \n\nTo place order, you need to provide payment method ID and list of price items from the catalog endpoint together with quantity.\nCoupons also can be provided during order creation.\n\nOrders created using this endpoint will be set for automatically renewal.",
+    "method": "POST",
+    "path": "/api/billing/v1/orders",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "payment_method_id": {
+          "type": "integer",
+          "description": "Payment method ID"
+        },
+        "items": {
+          "type": "array",
+          "description": "items property"
+        },
+        "coupons": {
+          "type": "array",
+          "description": "coupons property"
+        }
+      },
+      "required": [
+        "payment_method_id",
+        "items"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "billing_setDefaultPaymentMethodV1",
+    "description": "This endpoint sets default payment method for your account.",
+    "method": "POST",
+    "path": "/api/billing/v1/payment-methods/{paymentMethodId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "paymentMethodId": {
+          "type": "integer",
+          "description": "Payment method ID"
+        }
+      },
+      "required": [
+        "paymentMethodId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "billing_deletePaymentMethodV1",
+    "description": "This endpoint deletes a payment method from your account.",
+    "method": "DELETE",
+    "path": "/api/billing/v1/payment-methods/{paymentMethodId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "paymentMethodId": {
+          "type": "integer",
+          "description": "Payment method ID"
+        }
+      },
+      "required": [
+        "paymentMethodId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "billing_getPaymentMethodListV1",
+    "description": "This endpoint retrieves a list of available payment methods that can be used for placing new orders.\n\nIf you want to add new payment method, please use [hPanel](https://hpanel.hostinger.com/billing/payment-methods).",
+    "method": "GET",
+    "path": "/api/billing/v1/payment-methods",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "billing_cancelSubscriptionV1",
+    "description": "This endpoint cancels a subscription and stops any further billing.",
+    "method": "DELETE",
+    "path": "/api/billing/v1/subscriptions/{subscriptionId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "subscriptionId": {
+          "type": "string",
+          "description": "Subscription ID"
+        }
+      },
+      "required": [
+        "subscriptionId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "billing_getSubscriptionListV1",
+    "description": "This endpoint retrieves a list of all subscriptions associated with your account.",
+    "method": "GET",
+    "path": "/api/billing/v1/subscriptions",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "DNS_getSnapshotV1",
+    "description": "This endpoint retrieves particular DNS snapshot with the contents of DNS zone records.",
+    "method": "GET",
+    "path": "/api/dns/v1/snapshots/{domain}/{snapshotId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
+        "snapshotId": {
+          "type": "integer",
+          "description": "Snapshot ID"
+        }
+      },
+      "required": [
+        "domain",
+        "snapshotId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "DNS_restoreSnapshotV1",
+    "description": "This endpoint restores DNS zone to the selected snapshot.",
+    "method": "POST",
+    "path": "/api/dns/v1/snapshots/{domain}/{snapshotId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
+        "snapshotId": {
+          "type": "integer",
+          "description": "Snapshot ID"
+        }
+      },
+      "required": [
+        "domain",
+        "snapshotId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "DNS_getSnapshotListV1",
+    "description": "This endpoint retrieves list of DNS snapshots.",
+    "method": "GET",
+    "path": "/api/dns/v1/snapshots/{domain}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "DNS_getRecordsV1",
+    "description": "This endpoint retrieves DNS zone records for a specific domain.",
+    "method": "GET",
+    "path": "/api/dns/v1/zones/{domain}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "DNS_resetZoneRecordsV1",
+    "description": "This endpoint resets DNS zone to the default records.",
+    "method": "POST",
+    "path": "/api/dns/v1/zones/{domain}/reset",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
+        "sync": {
+          "type": "boolean",
+          "description": "Determines if operation should be run synchronously"
+        },
+        "reset_email_records": {
+          "type": "boolean",
+          "description": "Determines if email records should be reset"
+        },
+        "whitelisted_record_types": {
+          "type": "array",
+          "description": "Specifies which record types to not reset"
+        }
+      },
+      "required": [
+        "domain"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "domains_getDomainListV1",
+    "description": "This endpoint retrieves a list of all domains associated with your account.",
+    "method": "GET",
+    "path": "/api/domains/v1/portfolio",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getDataCentersListV1",
+    "description": "This endpoint retrieves a list of all data centers available.",
+    "method": "GET",
+    "path": "/api/vps/v1/data-centers",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_activateFirewallV1",
+    "description": "This endpoint activates a firewall for a specified virtual machine. \n\nOnly one firewall can be active for a virtual machine at a time.",
+    "method": "POST",
+    "path": "/api/vps/v1/firewall/{firewallId}/activate/{virtualMachineId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "firewallId",
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_deactivateFirewallV1",
+    "description": "This endpoint deactivates a firewall for a specified virtual machine.",
+    "method": "POST",
+    "path": "/api/vps/v1/firewall/{firewallId}/deactivate/{virtualMachineId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "firewallId",
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getFirewallV1",
+    "description": "This endpoint retrieves firewall by its ID and rules associated with it.",
+    "method": "GET",
+    "path": "/api/vps/v1/firewall/{firewallId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        }
+      },
+      "required": [
+        "firewallId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_deleteFirewallV1",
+    "description": "This endpoint deletes a specified firewall. \n\nAny virtual machine that has this firewall activated will automatically have it deactivated.",
+    "method": "DELETE",
+    "path": "/api/vps/v1/firewall/{firewallId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        }
+      },
+      "required": [
+        "firewallId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getFirewallListV1",
+    "description": "This endpoint retrieves a list of all firewalls available.",
+    "method": "GET",
+    "path": "/api/vps/v1/firewall",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
+      "required": []
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_createNewFirewallV1",
+    "description": "This endpoint creates a new firewall.",
+    "method": "POST",
+    "path": "/api/vps/v1/firewall",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "name property"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_updateFirewallRuleV1",
+    "description": "This endpoint updates a specific firewall rule from a specified firewall.\n\nAny virtual machine that has this firewall activated will loose sync with the firewall and will have to be synced again manually.",
+    "method": "PUT",
+    "path": "/api/vps/v1/firewall/{firewallId}/rules/{ruleId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "ruleId": {
+          "type": "integer",
+          "description": "Firewall Rule ID"
+        },
+        "protocol": {
+          "type": "string",
+          "description": "protocol property",
+          "enum": [
+            "TCP",
+            "UDP",
+            "ICMP",
+            "GRE",
+            "any",
+            "ESP",
+            "AH",
+            "ICMPv6",
+            "SSH",
+            "HTTP",
+            "HTTPS",
+            "MySQL",
+            "PostgreSQL"
+          ]
+        },
+        "port": {
+          "type": "string",
+          "description": "Port or port range, ex: 1024:2048"
+        },
+        "source": {
+          "type": "string",
+          "description": "source property",
+          "enum": [
+            "any",
+            "custom"
+          ]
+        },
+        "source_detail": {
+          "type": "string",
+          "description": "IP range, CIDR, single IP or `any`"
+        }
+      },
+      "required": [
+        "firewallId",
+        "ruleId",
+        "protocol",
+        "port",
+        "source",
+        "source_detail"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_deleteFirewallRuleV1",
+    "description": "This endpoint deletes a specific firewall rule from a specified firewall.\n\nAny virtual machine that has this firewall activated will loose sync with the firewall and will have to be synced again manually.",
+    "method": "DELETE",
+    "path": "/api/vps/v1/firewall/{firewallId}/rules/{ruleId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "ruleId": {
+          "type": "integer",
+          "description": "Firewall Rule ID"
+        }
+      },
+      "required": [
+        "firewallId",
+        "ruleId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_createFirewallRuleV1",
+    "description": "This endpoint creates new firewall rule from a specified firewall. \nBy default, the firewall drops all incoming traffic, which means you must add accept rules for all ports you want to use.\n\nAny virtual machine that has this firewall activated will loose sync with the firewall and will have to be synced again manually.",
+    "method": "POST",
+    "path": "/api/vps/v1/firewall/{firewallId}/rules",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "protocol": {
+          "type": "string",
+          "description": "protocol property",
+          "enum": [
+            "TCP",
+            "UDP",
+            "ICMP",
+            "GRE",
+            "any",
+            "ESP",
+            "AH",
+            "ICMPv6",
+            "SSH",
+            "HTTP",
+            "HTTPS",
+            "MySQL",
+            "PostgreSQL"
+          ]
+        },
+        "port": {
+          "type": "string",
+          "description": "Port or port range, ex: 1024:2048"
+        },
+        "source": {
+          "type": "string",
+          "description": "source property",
+          "enum": [
+            "any",
+            "custom"
+          ]
+        },
+        "source_detail": {
+          "type": "string",
+          "description": "IP range, CIDR, single IP or `any`"
+        }
+      },
+      "required": [
+        "firewallId",
+        "protocol",
+        "port",
+        "source",
+        "source_detail"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_syncFirewallV1",
+    "description": "This endpoint syncs a firewall for a specified virtual machine.\n\nFirewall can loose sync with virtual machine if the firewall has new rules added, removed or updated.",
+    "method": "POST",
+    "path": "/api/vps/v1/firewall/{firewallId}/sync/{virtualMachineId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "firewallId",
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getPostInstallScriptV1",
+    "description": "This endpoint retrieves post-install script by its ID.",
+    "method": "GET",
+    "path": "/api/vps/v1/post-install-scripts/{postInstallScriptId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "postInstallScriptId": {
+          "type": "integer",
+          "description": "Post-install script ID"
+        }
+      },
+      "required": [
+        "postInstallScriptId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_updatePostInstallScriptV1",
+    "description": "This endpoint updates a specific post-install script.",
+    "method": "PUT",
+    "path": "/api/vps/v1/post-install-scripts/{postInstallScriptId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "postInstallScriptId": {
+          "type": "integer",
+          "description": "Post-install script ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the script"
+        },
+        "content": {
+          "type": "string",
+          "description": "Content of the script"
+        }
+      },
+      "required": [
+        "postInstallScriptId",
+        "name",
+        "content"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_deleteAPostInstallScriptV1",
+    "description": "This endpoint deletes a post-install script from your account. ",
+    "method": "DELETE",
+    "path": "/api/vps/v1/post-install-scripts/{postInstallScriptId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "postInstallScriptId": {
+          "type": "integer",
+          "description": "Post-install script ID"
+        }
+      },
+      "required": [
+        "postInstallScriptId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getPostInstallScriptListV1",
+    "description": "This endpoint retrieves a list of post-install scripts associated with your account.",
+    "method": "GET",
+    "path": "/api/vps/v1/post-install-scripts",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
+      "required": []
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_createPostInstallScriptV1",
+    "description": "This endpoint allows you to add a new post-install script to your account, \nwhich can then be used run after the installation of a virtual machine instance.\n\nThe script contents will be saved to the file `/post_install` with executable attribute set and will be executed once virtual machine is installed.\nThe output of the script will be redirected to `/post_install.log`. Maximum script size is 48KB. ",
+    "method": "POST",
+    "path": "/api/vps/v1/post-install-scripts",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the script"
+        },
+        "content": {
+          "type": "string",
+          "description": "Content of the script"
+        }
+      },
+      "required": [
+        "name",
+        "content"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_attachPublicKeyV1",
+    "description": "This endpoint attaches an existing public keys from your account to a specified virtual machine.\n\nMultiple keys can be attached to a single virtual machine.",
+    "method": "POST",
+    "path": "/api/vps/v1/public-keys/attach/{virtualMachineId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "ids": {
+          "type": "array",
+          "description": "Public Key IDs to attach"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "ids"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_deleteAPublicKeyV1",
+    "description": "This endpoint deletes a public key from your account. \n\n**Deleting public key from account does not remove it from virtual machine** ",
+    "method": "DELETE",
+    "path": "/api/vps/v1/public-keys/{publicKeyId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "publicKeyId": {
+          "type": "integer",
+          "description": "Public Key ID"
+        }
+      },
+      "required": [
+        "publicKeyId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getPublicKeyListV1",
+    "description": "This endpoint retrieves a list of public keys associated with your account.",
+    "method": "GET",
+    "path": "/api/vps/v1/public-keys",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
+      "required": []
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_createNewPublicKeyV1",
+    "description": "This endpoint allows you to add a new public key to your account, \nwhich can then be attached to virtual machine instances for secure access.",
+    "method": "POST",
+    "path": "/api/vps/v1/public-keys",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "name property"
+        },
+        "key": {
+          "type": "string",
+          "description": "key property"
+        }
+      },
+      "required": [
+        "name",
+        "key"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getTemplateV1",
+    "description": "This endpoint retrieves details of a specific OS template for virtual machines.",
+    "method": "GET",
+    "path": "/api/vps/v1/templates/{templateId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "templateId": {
+          "type": "integer",
+          "description": "Template ID"
+        }
+      },
+      "required": [
+        "templateId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getTemplateListV1",
+    "description": "This endpoint retrieves a list of available OS templates for virtual machines.",
+    "method": "GET",
+    "path": "/api/vps/v1/templates",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getActionV1",
+    "description": "This endpoint retrieves details of a specific action performed on a specified virtual machine. \n\nThis endpoint allows you to view detailed information about a particular action, including the action name, timestamp, and status.",
+    "method": "GET",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/actions/{actionId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "actionId": {
+          "type": "integer",
+          "description": "Action ID"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "actionId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getActionListV1",
+    "description": "This endpoint retrieves a list of actions performed on a specified virtual machine.\n\nActions are operations or events that have been executed on the virtual machine, such as starting, stopping, or modifying \nthe machine. This endpoint allows you to view the history of these actions, providing details about each action, \nsuch as the action name, timestamp, and status.",
+    "method": "GET",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/actions",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getAttachedPublicKeysV1",
+    "description": "This endpoint retrieves a list of public keys attached to a specified virtual machine.",
+    "method": "GET",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/public-keys",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_deleteBackupV1",
+    "description": "This endpoint deletes a specified backup for a virtual machine.",
+    "method": "DELETE",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/backups/{backupId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "backupId": {
+          "type": "integer",
+          "description": "Backup ID"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "backupId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getBackupListV1",
+    "description": "This endpoint retrieves a list of backups for a specified virtual machine.",
+    "method": "GET",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/backups",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        },
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_restoreBackupV1",
+    "description": "This endpoint restores a backup for a specified virtual machine.\n\nThe system will then initiate the restore process, which may take some time depending on the size of the backup.\n\n**All data on the virtual machine will be overwritten with the data from the backup.**",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/backups/{backupId}/restore",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "backupId": {
+          "type": "integer",
+          "description": "Backup ID"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "backupId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_setHostnameV1",
+    "description": "This endpoint sets the hostname for a specified virtual machine. \nChanging hostname does not update PTR record automatically.\nIf you want your virtual machine to be reachable by a hostname, \nyou need to point your domain A/AAAA records to virtual machine IP as well.",
+    "method": "PUT",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/hostname",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "hostname": {
+          "type": "string",
+          "description": "hostname property"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "hostname"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_resetHostnameV1",
+    "description": "This endpoint resets the hostname and PTR record of a specified virtual machine to the default value.",
+    "method": "DELETE",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/hostname",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getVirtualMachineV1",
+    "description": "This endpoint retrieves detailed information about a specified virtual machine.",
+    "method": "GET",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getVirtualMachineListV1",
+    "description": "This endpoint retrieves a list of all available virtual machines.",
+    "method": "GET",
+    "path": "/api/vps/v1/virtual-machines",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getScanMetricsV1",
+    "description": "This endpoint retrieves the scan metrics for the [Monarx](https://www.monarx.com/) malware scanner installed on a specified virtual machine.\nThe scan metrics provide detailed information about the malware scans performed by Monarx, including the number of scans, \ndetected threats, and other relevant statistics. This information is useful for monitoring the security status of the \nvirtual machine and assessing the effectiveness of the malware scanner.",
+    "method": "GET",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/monarx",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_installMonarxV1",
+    "description": "This endpoint installs the Monarx malware scanner on a specified virtual machine. \n\n[Monarx](https://www.monarx.com/) is a security tool designed to detect and prevent malware infections on virtual machines. \nBy installing Monarx, users can enhance the security of their virtual machines, ensuring that they are protected against malicious software.",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/monarx",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_uninstallMonarxV1",
+    "description": "This endpoint uninstalls the Monarx malware scanner on a specified virtual machine.\nIf Monarx is not installed, the request will still be processed without any effect.",
+    "method": "DELETE",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/monarx",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getMetricsV1",
+    "description": "This endpoint retrieves the historical metrics for a specified virtual machine.\nIt includes the following metrics: \n- CPU usage\n- Memory usage\n- Disk usage\n- Network usage\n- Uptime",
+    "method": "GET",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/metrics",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "date_from": {
+          "type": "string",
+          "description": "the date-time notation as defined by RFC 3339, section 5.6"
+        },
+        "date_to": {
+          "type": "string",
+          "description": "the date-time notation as defined by RFC 3339, section 5.6"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "date_from",
+        "date_to"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_setNameserversV1",
+    "description": "This endpoint sets the nameservers for a specified virtual machine.\nBe aware, that improper nameserver configuration can lead to the virtual machine being unable to resolve domain names.",
+    "method": "PUT",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/nameservers",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "ns1": {
+          "type": "string",
+          "description": "ns1 property"
+        },
+        "ns2": {
+          "type": "string",
+          "description": "ns2 property"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "ns1"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_createPTRRecordV1",
+    "description": "This endpoint creates or updates a PTR (Pointer) record for a specified virtual machine.",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/ptr",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_deletePTRRecordV1",
+    "description": "This endpoint deletes a PTR (Pointer) record for a specified virtual machine. \n\nOnce deleted, reverse DNS lookups to the virtual machine's IP address will no longer return the previously configured hostname.",
+    "method": "DELETE",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/ptr",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_setPanelPasswordV1",
+    "description": "This endpoint sets the panel password for a specified virtual machine. \nIf virtual machine does not use panel OS, the request will still be processed without any effect.\nRequirements for the password is the same as in the [recreate virtual machine endpoint](/#tag/vps-virtual-machine/POST/api/vps/v1/virtual-machines/{virtualMachineId}/recreate).",
+    "method": "PUT",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/panel-password",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "password": {
+          "type": "string",
+          "description": "Panel password for the virtual machine"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "password"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_startRecoveryModeV1",
+    "description": "This endpoint initiates the recovery mode for a specified virtual machine. \nRecovery mode is a special state that allows users to perform system rescue operations, \nsuch as repairing file systems, recovering data, or troubleshooting issues that prevent the virtual machine \nfrom booting normally. \n\nVirtual machine will boot recovery disk image and original disk image will be mounted in `/mnt` directory.",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/recovery",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "root_password": {
+          "type": "string",
+          "description": "Temporary root password for recovery mode"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "root_password"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_stopRecoveryModeV1",
+    "description": "This endpoint stops the recovery mode for a specified virtual machine. \nIf virtual machine is not in recovery mode, this operation will fail.",
+    "method": "DELETE",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/recovery",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_recreateVirtualMachineV1",
+    "description": "This endpoint will recreate a virtual machine from scratch. \nThe recreation process involves reinstalling the operating system and resetting the virtual machine to its initial state.\nSnapshots, if there are any, will be deleted.\n\n## Password Requirements\nPassword will be checked against leaked password databases. \nRequirements for the password are:\n- At least 8 characters long\n- At least one uppercase letter\n- At least one lowercase letter\n- At least one number\n- Is not leaked publicly\n\n**This operation is irreversible and will result in the loss of all data stored on the virtual machine!**",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/recreate",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "template_id": {
+          "type": "integer",
+          "description": "Template ID"
+        },
+        "password": {
+          "type": "string",
+          "description": "Password for the virtual machine. If not provided, random password will be generated. Password will not be shown in the response."
+        },
+        "post_install_script_id": {
+          "type": "integer",
+          "description": "Post-install script ID"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "template_id"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_restartVirtualMachineV1",
+    "description": "This endpoint restarts a specified virtual machine. This is equivalent to fully stopping and starting the virtual machine.\nIf the virtual machine was stopped, it will be started.",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/restart",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_setRootPasswordV1",
+    "description": "This endpoint sets the root password for a specified virtual machine. \nRequirements for the password is the same as in the [recreate virtual machine endpoint](/#tag/vps-virtual-machine/POST/api/vps/v1/virtual-machines/{virtualMachineId}/recreate).",
+    "method": "PUT",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/root-password",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "password": {
+          "type": "string",
+          "description": "Root password for the virtual machine"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "password"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_setupNewVirtualMachineV1",
+    "description": "This endpoint will setup newly purchased virtual machine. Such virtual machines has `initial` state. \nNew virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/billing-orders/POST/api/billing/v1/orders) endpoint.                        ",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/setup",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "template_id": {
+          "type": "integer",
+          "description": "Template ID"
+        },
+        "data_center_id": {
+          "type": "integer",
+          "description": "Data center ID"
+        },
+        "post_install_script_id": {
+          "type": "integer",
+          "description": "Post-install script ID"
+        },
+        "password": {
+          "type": "string",
+          "description": "Password for the virtual machine. If not provided, random password will be generated. Password will not be shown in the response."
+        },
+        "hostname": {
+          "type": "string",
+          "description": "Override default hostname of the virtual machine"
+        },
+        "install_monarx": {
+          "type": "boolean",
+          "description": "Install Monarx malware scanner (if supported)"
+        },
+        "enable_backups": {
+          "type": "boolean",
+          "description": "Enable weekly backup schedule"
+        },
+        "ns1": {
+          "type": "string",
+          "description": "ns1 property"
+        },
+        "ns2": {
+          "type": "string",
+          "description": "ns2 property"
+        },
+        "public_key": {
+          "type": "object",
+          "description": "public_key property"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "data_center_id",
+        "template_id"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_getSnapshotV1",
+    "description": "This endpoint retrieves a snapshot for a specified virtual machine.",
+    "method": "GET",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_createSnapshotV1",
+    "description": "This endpoint creates a snapshot of a specified virtual machine. \nA snapshot captures the state and data of the virtual machine at a specific point in time, \nallowing users to restore the virtual machine to that state if needed. \nThis operation is useful for backup purposes, system recovery, \nand testing changes without affecting the current state of the virtual machine.\n\n**Creating new snapshot will overwrite the existing snapshot!**",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_deleteSnapshotV1",
+    "description": "This endpoint deletes a snapshot of a specified virtual machine.",
+    "method": "DELETE",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_restoreSnapshotV1",
+    "description": "This endpoint restores a specified virtual machine to a previous state using a snapshot. \nRestoring from a snapshot allows users to revert the virtual machine to that state, which is useful for system recovery, undoing changes, or testing.",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot/restore",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_startVirtualMachineV1",
+    "description": "This endpoint starts a specified virtual machine. \nIf the virtual machine is already running, the request will still be processed without any effect.",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/start",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "VPS_stopVirtualMachineV1",
+    "description": "This endpoint stops a specified virtual machine. \nIf the virtual machine is already stopped, the request will still be processed without any effect.",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/stop",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  }
+];
+const SECURITY_SCHEMES: Record<string, SecurityScheme> = {
+  "apiToken": {
+    "type": "http",
+    "description": "API Token authentication",
+    "scheme": "bearer"
+  }
+};
+
+/**
+ * MCP Server for Hostinger API
+ * Generated from OpenAPI spec version 0.0.14
+ */
+class MCPServer {
+  private server: Server;
+  private tools: Map<string, Tool> = new Map();
+  private debug: boolean;
+  private baseUrl: string;
+  private headers: Record<string, string>;
+
+  constructor() {
+    // Initialize properties
+    this.debug = process.env.DEBUG === "true";
+    this.baseUrl = process.env.API_BASE_URL || "https://developers.hostinger.com";
+    this.headers = this.parseHeaders(process.env.API_HEADERS || "");
+
+    // Initialize tools map - do this before creating server
+    this.initializeTools();
+
+    // Create MCP server with correct capabilities
+    this.server = new Server(
+      {
+        name: "hostinger-api-mcp",
+        version: "0.0.1",
+      },
+      {
+        capabilities: {
+          tools: {}, // Enable tools capability
+        },
+      }
+    );
+
+    // Set up request handlers - don't log here
+    this.setupHandlers();
+  }
+
+  /**
+   * Parse headers from string
+   */
+  private parseHeaders(headerStr: string): Record<string, string> {
+    const headers: Record<string, string> = {};
+    if (headerStr) {
+      headerStr.split(",").forEach((header) => {
+        const [key, value] = header.split(":");
+        if (key && value) headers[key.trim()] = value.trim();
+      });
+    }
+    
+    headers['User-Agent'] = 'hostinger-mcp-server/' + this.server.getClientVersion();
+    
+    return headers;
+  }
+
+  /**
+   * Initialize tools map from OpenAPI spec
+   * This runs before the server is connected, so don't log here
+   */
+  private initializeTools(): void {
+    // Initialize each tool in the tools map
+    for (const tool of TOOLS) {
+      this.tools.set(tool.name, {
+        name: tool.name,
+        description: tool.description,
+        inputSchema: tool.inputSchema,
+        // Don't include security at the tool level
+      });
+    }
+
+    // Don't log here, we're not connected yet
+    console.error(`Initialized ${this.tools.size} tools`);
+  }
+
+  /**
+   * Set up request handlers
+   */
+  private setupHandlers(): void {
+    // Handle tool listing requests
+    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
+      this.log('debug', "Handling ListTools request");
+      // Return tools in the format expected by MCP SDK
+      return {
+        tools: Array.from(this.tools.entries()).map(([id, tool]) => ({
+          id,
+          ...tool,
+        })),
+      };
+    });
+
+    // Handle tool execution requests
+    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+      const { id, name, arguments: params } = request.params;
+      this.log('debug', "Handling CallTool request", { id, name, params });
+
+      let toolName: string | undefined;
+      let toolDetails: OpenApiTool | undefined;
+
+      // Find the requested tool
+      for (const [tid, tool] of this.tools.entries()) {
+        if (tool.name === name) {
+          toolName = name;
+          break;
+        }
+      }
+
+      if (!toolName) {
+        throw new Error(`Tool not found: ${name}`)
+      }
+
+      toolDetails = TOOLS.find(t => t.name === toolName);
+      if (!toolDetails) {
+        throw new Error(`Tool details not found for ID: ${toolName}`);
+      }
+        
+      try {
+        this.log('info', `Executing tool: ${toolName}`);
+
+        // Execute the API call
+        const result = await this.executeApiCall(toolDetails, params || {});
+
+        // Return the result in correct MCP format
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result)
+            }
+          ]
+        };
+
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        this.log('error', `Error executing tool ${toolName}: ${errorMessage}`);
+        
+        throw error;
+      }
+    });
+  }
+
+  /**
+   * Execute an API call for a tool
+   */
+  private async executeApiCall(tool: OpenApiTool, params: Record<string, any>): Promise<any> {
+    // Get method and path from tool
+    const method = tool.method;
+    let path = tool.path;
+
+    // Clone params to avoid modifying the original
+    const requestParams = { ...params };
+
+    // Replace path parameters with values from params
+    Object.entries(requestParams).forEach(([key, value]) => {
+      const placeholder = `{${key}}`;
+      if (path.includes(placeholder)) {
+        path = path.replace(placeholder, encodeURIComponent(String(value)));
+        delete requestParams[key]; // Remove used parameter
+      }
+    });
+
+    // Build the full URL
+    const baseUrl = this.baseUrl.endsWith("/") ? this.baseUrl : `${this.baseUrl}/`;
+    const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+    const url = new URL(cleanPath, baseUrl).toString();
+
+    this.log('debug', `API Request: ${method} ${url}`);
+
+    try {
+      // Configure the request
+      const config: AxiosRequestConfig = {
+        method: method.toLowerCase(),
+        url,
+        headers: { ...this.headers },
+      };
+
+      // Apply security headers based on tool security requirements
+      if (tool.security && Array.isArray(tool.security)) {
+        for (const requirement of tool.security) {
+          for (const securitySchemeName of Object.keys(requirement)) {
+            const securityDefinition = SECURITY_SCHEMES[securitySchemeName];
+
+            if (securityDefinition) {
+              const authType = securityDefinition.type;
+
+              // Handle API key
+              if (authType === 'apiKey') {
+                const apiKeyName = securityDefinition.name || '';
+                const envVarName = `${securitySchemeName.toUpperCase()}_${apiKeyName.toUpperCase()}`;
+                const apiKeyValue = process.env[envVarName];
+
+                if (apiKeyValue) {
+                  if (securityDefinition.in === 'header') {
+                    config.headers = config.headers || {};
+                    config.headers[apiKeyName] = apiKeyValue;
+                  } else if (securityDefinition.in === 'query') {
+                    config.params = config.params || {};
+                    config.params[apiKeyName] = apiKeyValue;
+                  }
+                } else {
+                  this.log('warning', `API Key environment variable not found: ${envVarName}`);
+                }
+              }
+              // Handle bearer token
+              else if (authType === 'http' && securityDefinition.scheme === 'bearer') {
+                const envVarName = `${securitySchemeName.toUpperCase()}`;
+                const bearerToken = process.env[envVarName];
+
+                if (bearerToken) {
+                  config.headers = config.headers || {};
+                  config.headers['Authorization'] = `Bearer ${bearerToken}`;
+                } else {
+                  this.log('warning', `Bearer Token environment variable not found: ${envVarName}`);
+                }
+              }
+              // Handle basic auth
+              else if (authType === 'http' && securityDefinition.scheme === 'basic') {
+                const username = process.env[`${securitySchemeName.toUpperCase()}_USERNAME`];
+                const password = process.env[`${securitySchemeName.toUpperCase()}_PASSWORD`];
+
+                if (username && password) {
+                  const auth = Buffer.from(`${username}:${password}`).toString('base64');
+                  config.headers = config.headers || {};
+                  config.headers['Authorization'] = `Basic ${auth}`;
+                } else {
+                  this.log('warning', `Basic auth credentials not found for ${securitySchemeName}`);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Add parameters based on request method
+      if (["GET", "DELETE"].includes(method)) {
+        // For GET/DELETE, send params as query string
+        config.params = { ...(config.params || {}), ...requestParams };
+      } else {
+        // For POST/PUT/PATCH, send params as JSON body
+        config.data = requestParams;
+        if (config.headers) {
+          config.headers["Content-Type"] = "application/json";
+        }
+      }
+
+      this.log('debug', "Request config:", {
+        url: config.url,
+        method: config.method,
+        params: config.params,
+        headers: config.headers ? Object.keys(config.headers) : []
+      });
+
+      // Execute the request
+      const response = await axios(config);
+      this.log('debug', `Response status: ${response.status}`);
+
+      return response.data;
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.log('error', `API request failed: ${errorMessage}`);
+
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        const responseData = axiosError.response?.data;
+        const responseStatus = axiosError.response?.status;
+
+        this.log('error', 'API Error Details:', {
+          status: responseStatus,
+          data: typeof responseData === 'object' ? JSON.stringify(responseData) : String(responseData)
+        });
+
+        // Rethrow with more context for better error handling
+        const detailedError = new Error(`API request failed with status ${responseStatus}: ${errorMessage}`);
+        (detailedError as any).response = axiosError.response;
+        throw detailedError;
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Log messages with appropriate level
+   * Only sends to MCP if we're connected
+   */
+  private log(level: 'debug' | 'info' | 'warning' | 'error', message: string, data?: any): void {
+    // Always log to stderr for visibility
+    console.error(`[${level.toUpperCase()}] ${message}${data ? ': ' + JSON.stringify(data) : ''}`);
+
+    // Only try to send via MCP if we're in debug mode or it's important
+    if (this.debug || level !== 'debug') {
+      try {
+        // Only send if server exists and is connected
+        if (this.server && (this.server as any).isConnected) {
+          this.server.sendLoggingMessage({
+            level,
+            data: `[MCP Server] ${message}${data ? ': ' + JSON.stringify(data) : ''}`
+          });
+        }
+      } catch (e) {
+        // If logging fails, log to stderr
+        console.error('Failed to send log via MCP:', (e as Error).message);
+      }
+    }
+  }
+
+  /**
+   * Start the server
+   */
+  async start(): Promise<void> {
+    try {
+      // Create stdio transport
+      const transport = new StdioServerTransport();
+      console.error("MCP Server starting on stdio transport");
+
+      // Connect to the transport
+      await this.server.connect(transport);
+
+      // Now we can safely log via MCP
+      console.error(`Registered ${this.tools.size} tools`);
+      this.log('info', `MCP Server started successfully with ${this.tools.size} tools`);
+    } catch (error) {
+      console.error("Failed to start MCP server:", error);
+      process.exit(1);
+    }
+  }
+}
+
+// Start the server
+async function main(): Promise<void> {
+  try {
+    const server = new MCPServer();
+    await server.start();
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+main();
