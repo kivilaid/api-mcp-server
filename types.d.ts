@@ -124,6 +124,19 @@ If you want to add new payment method, please use [hPanel](https://hpanel.hostin
   };
 
   /**
+   * This endpoint retrieves list of DNS snapshots.
+   */
+  "undefined": {
+    params: {
+      /**
+       * Domain name
+       */
+      domain: string;
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
    * This endpoint restores DNS zone to the selected snapshot.
    */
   "undefined": {
@@ -136,19 +149,6 @@ If you want to add new payment method, please use [hPanel](https://hpanel.hostin
        * Snapshot ID
        */
       snapshotId: number;
-    };
-    response: any; // Response structure will depend on the API
-  };
-
-  /**
-   * This endpoint retrieves list of DNS snapshots.
-   */
-  "undefined": {
-    params: {
-      /**
-       * Domain name
-       */
-      domain: string;
     };
     response: any; // Response structure will depend on the API
   };
@@ -191,7 +191,12 @@ Otherwise existing records will be updated and new records will be added.
   };
 
   /**
-   * This endpoint deletes selected DNS records for the selected domain.
+   * This endpoint deletes DNS records for the selected domain. 
+To filter which records to delete, add the `name` of the record and `type` to the filter. 
+Multiple filters can be provided with single request.
+
+If you have multiple records with the same name and type, and you want to delete only part of them,
+refer to the `Update zone records` endpoint.
    */
   "undefined": {
     params: {

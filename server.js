@@ -192,10 +192,33 @@ const TOOLS = [
     ]
   },
   {
+    "name": "DNS_getSnapshotListV1",
+    "description": "This endpoint retrieves list of DNS snapshots.",
+    "method": "GET",
+    "path": "/api/dns/v1/snapshots/{domain}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
     "name": "DNS_restoreSnapshotV1",
     "description": "This endpoint restores DNS zone to the selected snapshot.",
     "method": "POST",
-    "path": "/api/dns/v1/snapshots/{domain}/{snapshotId}",
+    "path": "/api/dns/v1/snapshots/{domain}/{snapshotId}/restore",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -211,29 +234,6 @@ const TOOLS = [
       "required": [
         "domain",
         "snapshotId"
-      ]
-    },
-    "security": [
-      {
-        "apiToken": []
-      }
-    ]
-  },
-  {
-    "name": "DNS_getSnapshotListV1",
-    "description": "This endpoint retrieves list of DNS snapshots.",
-    "method": "GET",
-    "path": "/api/dns/v1/snapshots/{domain}",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "domain": {
-          "type": "string",
-          "description": "Domain name"
-        }
-      },
-      "required": [
-        "domain"
       ]
     },
     "security": [
@@ -299,7 +299,7 @@ const TOOLS = [
   },
   {
     "name": "DNS_deleteZoneRecordsV1",
-    "description": "This endpoint deletes selected DNS records for the selected domain.",
+    "description": "This endpoint deletes DNS records for the selected domain. \nTo filter which records to delete, add the `name` of the record and `type` to the filter. \nMultiple filters can be provided with single request.\n\nIf you have multiple records with the same name and type, and you want to delete only part of them,\nrefer to the `Update zone records` endpoint.",
     "method": "DELETE",
     "path": "/api/dns/v1/zones/{domain}",
     "inputSchema": {
@@ -1832,7 +1832,7 @@ const SECURITY_SCHEMES = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.18
+ * Generated from OpenAPI spec version 0.0.20
  */
 class MCPServer {
   constructor() {
@@ -1850,7 +1850,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.9",
+        version: "0.0.10",
       },
       {
         capabilities: {
@@ -1875,7 +1875,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.9';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.10';
     
     return headers;
   }

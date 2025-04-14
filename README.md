@@ -203,18 +203,6 @@ This endpoint retrieves particular DNS snapshot with the contents of DNS zone re
 - `domain`: Domain name (required)
 - `snapshotId`: Snapshot ID (required)
 
-### DNS_restoreSnapshotV1
-
-This endpoint restores DNS zone to the selected snapshot.
-
-- **Method**: `POST`
-- **Path**: `/api/dns/v1/snapshots/{domain}/{snapshotId}`
-
-**Parameters**:
-
-- `domain`: Domain name (required)
-- `snapshotId`: Snapshot ID (required)
-
 ### DNS_getSnapshotListV1
 
 This endpoint retrieves list of DNS snapshots.
@@ -225,6 +213,18 @@ This endpoint retrieves list of DNS snapshots.
 **Parameters**:
 
 - `domain`: Domain name (required)
+
+### DNS_restoreSnapshotV1
+
+This endpoint restores DNS zone to the selected snapshot.
+
+- **Method**: `POST`
+- **Path**: `/api/dns/v1/snapshots/{domain}/{snapshotId}/restore`
+
+**Parameters**:
+
+- `domain`: Domain name (required)
+- `snapshotId`: Snapshot ID (required)
 
 ### DNS_getRecordsV1
 
@@ -255,7 +255,12 @@ Otherwise existing records will be updated and new records will be added.
 
 ### DNS_deleteZoneRecordsV1
 
-This endpoint deletes selected DNS records for the selected domain.
+This endpoint deletes DNS records for the selected domain. 
+To filter which records to delete, add the `name` of the record and `type` to the filter. 
+Multiple filters can be provided with single request.
+
+If you have multiple records with the same name and type, and you want to delete only part of them,
+refer to the `Update zone records` endpoint.
 
 - **Method**: `DELETE`
 - **Path**: `/api/dns/v1/zones/{domain}`
