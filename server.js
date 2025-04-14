@@ -32,7 +32,7 @@ const TOOLS = [
   },
   {
     "name": "billing_createNewServiceOrderV1",
-    "description": "This endpoint creates a new service order. \n\nTo place order, you need to provide payment method ID and list of price items from the catalog endpoint together with quantity.\nCoupons also can be provided during order creation.\n\nOrders created using this endpoint will be set for automatically renewal.",
+    "description": "This endpoint creates a new service order. \n\nTo place order, you need to provide payment method ID and list of price items from the catalog endpoint together with quantity.\nCoupons also can be provided during order creation.\n\nOrders created using this endpoint will be set for automatic renewal.\n\nSome `credit_card` payments might need additional verification, rendering purchase unprocessed.\nWe recommend use other payment methods than `credit_card` if you encounter this issue.",
     "method": "POST",
     "path": "/api/billing/v1/orders",
     "inputSchema": {
@@ -267,7 +267,7 @@ const TOOLS = [
   },
   {
     "name": "DNS_updateZoneRecordsV1",
-    "description": "This endpoint updates DNS records for the selected domain. This endpoint could also be used\nto delete single record when multiple records exist under same name. In that case use `overwrite` flag\nand provide records which should remain. All other records under same name will be deleted.",
+    "description": "This endpoint updates DNS records for the selected domain. \n\nUsing `overwrite = true` will replace existing records with the provided ones. \nOtherwise existing records will be updated and new records will be added.",
     "method": "PUT",
     "path": "/api/dns/v1/zones/{domain}",
     "inputSchema": {
@@ -1832,7 +1832,7 @@ const SECURITY_SCHEMES = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.17
+ * Generated from OpenAPI spec version 0.0.18
  */
 class MCPServer {
   constructor() {
@@ -1850,7 +1850,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.8",
+        version: "0.0.9",
       },
       {
         capabilities: {
@@ -1875,7 +1875,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.8';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.9';
     
     return headers;
   }
