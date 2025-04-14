@@ -164,6 +164,42 @@ If you want to add new payment method, please use [hPanel](https://hpanel.hostin
   };
 
   /**
+   * This endpoint updates DNS records for the selected domain. This endpoint could also be used
+to delete single record when multiple records exist under same name. In that case use `overwrite` flag
+and provide records which should remain. All other records under same name will be deleted.
+   */
+  "undefined": {
+    params: {
+      /**
+       * Domain name
+       */
+      domain: string;
+      /**
+       * If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created.
+       */
+      overwrite?: boolean;
+      /**
+       * zone property
+       */
+      zone: array;
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint deletes selected DNS records for the selected domain.
+   */
+  "undefined": {
+    params: {
+      /**
+       * Domain name
+       */
+      domain: string;
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
    * This endpoint resets DNS zone to the default records.
    */
   "undefined": {
@@ -184,6 +220,30 @@ If you want to add new payment method, please use [hPanel](https://hpanel.hostin
        * Specifies which record types to not reset
        */
       whitelisted_record_types?: array;
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint used to validate DNS records prior update for the selected domain. 
+
+If the validation is successful, the response will contain `200 Success` code.
+If there is validation error, the response will fail with `422 Validation error` code.
+   */
+  "undefined": {
+    params: {
+      /**
+       * Domain name
+       */
+      domain: string;
+      /**
+       * If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created.
+       */
+      overwrite?: boolean;
+      /**
+       * zone property
+       */
+      zone: array;
     };
     response: any; // Response structure will depend on the API
   };

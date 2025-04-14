@@ -234,6 +234,32 @@ This endpoint retrieves DNS zone records for a specific domain.
 
 - `domain`: Domain name (required)
 
+### DNS_updateZoneRecordsV1
+
+This endpoint updates DNS records for the selected domain. This endpoint could also be used
+to delete single record when multiple records exist under same name. In that case use `overwrite` flag
+and provide records which should remain. All other records under same name will be deleted.
+
+- **Method**: `PUT`
+- **Path**: `/api/dns/v1/zones/{domain}`
+
+**Parameters**:
+
+- `domain`: Domain name (required)
+- `overwrite`: If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created. 
+- `zone`: zone property (required)
+
+### DNS_deleteZoneRecordsV1
+
+This endpoint deletes selected DNS records for the selected domain.
+
+- **Method**: `DELETE`
+- **Path**: `/api/dns/v1/zones/{domain}`
+
+**Parameters**:
+
+- `domain`: Domain name (required)
+
 ### DNS_resetZoneRecordsV1
 
 This endpoint resets DNS zone to the default records.
@@ -247,6 +273,22 @@ This endpoint resets DNS zone to the default records.
 - `sync`: Determines if operation should be run synchronously 
 - `reset_email_records`: Determines if email records should be reset 
 - `whitelisted_record_types`: Specifies which record types to not reset 
+
+### DNS_validateZoneRecordsV1
+
+This endpoint used to validate DNS records prior update for the selected domain. 
+
+If the validation is successful, the response will contain `200 Success` code.
+If there is validation error, the response will fail with `422 Validation error` code.
+
+- **Method**: `POST`
+- **Path**: `/api/dns/v1/zones/{domain}/validate`
+
+**Parameters**:
+
+- `domain`: Domain name (required)
+- `overwrite`: If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created. 
+- `zone`: zone property (required)
 
 ### domains_getDomainListV1
 

@@ -266,6 +266,61 @@ const TOOLS = [
     ]
   },
   {
+    "name": "DNS_updateZoneRecordsV1",
+    "description": "This endpoint updates DNS records for the selected domain. This endpoint could also be used\nto delete single record when multiple records exist under same name. In that case use `overwrite` flag\nand provide records which should remain. All other records under same name will be deleted.",
+    "method": "PUT",
+    "path": "/api/dns/v1/zones/{domain}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
+        "overwrite": {
+          "type": "boolean",
+          "description": "If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created."
+        },
+        "zone": {
+          "type": "array",
+          "description": "zone property"
+        }
+      },
+      "required": [
+        "domain",
+        "zone"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "DNS_deleteZoneRecordsV1",
+    "description": "This endpoint deletes selected DNS records for the selected domain.",
+    "method": "DELETE",
+    "path": "/api/dns/v1/zones/{domain}",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
     "name": "DNS_resetZoneRecordsV1",
     "description": "This endpoint resets DNS zone to the default records.",
     "method": "POST",
@@ -292,6 +347,38 @@ const TOOLS = [
       },
       "required": [
         "domain"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
+    "name": "DNS_validateZoneRecordsV1",
+    "description": "This endpoint used to validate DNS records prior update for the selected domain. \n\nIf the validation is successful, the response will contain `200 Success` code.\nIf there is validation error, the response will fail with `422 Validation error` code.",
+    "method": "POST",
+    "path": "/api/dns/v1/zones/{domain}/validate",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
+        "overwrite": {
+          "type": "boolean",
+          "description": "If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created."
+        },
+        "zone": {
+          "type": "array",
+          "description": "zone property"
+        }
+      },
+      "required": [
+        "domain",
+        "zone"
       ]
     },
     "security": [
@@ -1745,7 +1832,7 @@ const SECURITY_SCHEMES = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.14
+ * Generated from OpenAPI spec version 0.0.17
  */
 class MCPServer {
   constructor() {
@@ -1763,7 +1850,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.5",
+        version: "0.0.2",
       },
       {
         capabilities: {
@@ -1788,7 +1875,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.5';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.2';
     
     return headers;
   }
