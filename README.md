@@ -79,8 +79,10 @@ To use the MCP server with SSE transport, you must run the server with the `--ss
 This will enable the server to communicate with clients using Server-Sent Events on localhost port 8100.
 Additionally, you can specify the `--host` and `--port` options to set the host and port for the server to listen on.
 
+Example of running the server with SSE transport:
+
 ```bash
-node server.js --see --host 127.0.0.1 --port 8100
+hostinger-api-mcp --sse --host 127.0.0.1 --port 8100
 ```
 
 ### Using as an MCP Tool Provider
