@@ -2,6 +2,9 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import minimist from 'minimist';
+import express from "express";
 import axios from "axios";
 import { config as dotenvConfig } from "dotenv";
 import {
@@ -1864,7 +1867,7 @@ const SECURITY_SCHEMES = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.25
+ * Generated from OpenAPI spec version 0.0.27
  */
 class MCPServer {
   constructor() {
@@ -1882,7 +1885,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.11",
+        version: "0.0.12",
       },
       {
         capabilities: {
@@ -1907,7 +1910,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.11';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.12';
     
     return headers;
   }
@@ -2159,9 +2162,51 @@ class MCPServer {
   }
 
   /**
+   * Start the sse server
+   */
+  async startSse(host, port) {
+    try {
+      // Create sse transport
+      const app = express();
+      app.use(express.json());
+
+      let transport = null;
+      const sessions = {};
+
+      app.get('/sse', (req, res) => {
+        transport = new SSEServerTransport('/messages', res);
+        sessions[transport.sessionId] = transport;
+        
+        res.on('close', () => {
+           delete sessions[transport.sessionId];
+        });
+        
+        this.server.connect(transport);
+      });
+
+      app.post('/messages', (req, res) => {
+        const sessionId = req.query.sessionId;
+        const transport = sessions[sessionId];
+        if (transport) {
+          transport.handlePostMessage(req, res);
+        } else {
+          res.status(400).send('No transport found for sessionId');
+        }
+      });
+
+      app.listen(port, host);
+      this.log('info', `MCP Server with SSE transport started successfully with ${this.tools.size} tools`);
+      this.log('info', `Listening on ${host}:${port}`);
+    } catch (error) {
+      console.error("Failed to start MCP server:", error);
+      process.exit(1);
+    }
+  }  
+
+  /**
    * Start the server
    */
-  async start() {
+  async startStdio() {
     try {
       // Create stdio transport
       const transport = new StdioServerTransport();
@@ -2172,7 +2217,7 @@ class MCPServer {
 
       // Now we can safely log via MCP
       console.error(`Registered ${this.tools.size} tools`);
-      this.log('info', `MCP Server started successfully with ${this.tools.size} tools`);
+      this.log('info', `MCP Server with stdio transport started successfully with ${this.tools.size} tools`);
     } catch (error) {
       console.error("Failed to start MCP server:", error);
       process.exit(1);
@@ -2183,8 +2228,22 @@ class MCPServer {
 // Start the server
 async function main() {
   try {
+    const argv = minimist(process.argv.slice(2), { 
+        string: ['host'], 
+        int: ['port'], 
+        boolean: ['sse'],
+        default: {
+            host: '127.0.0.1',
+            port: 8100,
+        }
+    });
+    
     const server = new MCPServer();
-    await server.start();
+    if (argv.sse) {
+        await server.startSse(argv.host, argv.port);
+    } else {
+        await server.startStdio();
+    }
   } catch (error) {
     console.error("Failed to start server:", error);
     process.exit(1);

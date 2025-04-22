@@ -73,6 +73,16 @@ The following environment variables can be configured when running the server:
 }
 ```
 
+### Using SSE Transport
+
+To use the MCP server with SSE transport, you must run the server with the `--sse` option. 
+This will enable the server to communicate with clients using Server-Sent Events on localhost port 8100.
+Additionally, you can specify the `--host` and `--port` options to set the host and port for the server to listen on.
+
+```bash
+node server.js --see --host 127.0.0.1 --port 8100
+```
+
 ### Using as an MCP Tool Provider
 
 This server implements the Model Context Protocol (MCP) and can be used with any MCP-compatible consumer, like Claude.js client or other MCP consumers.
