@@ -258,6 +258,29 @@ If there is validation error, the response will fail with `422 Validation error`
   };
 
   /**
+   * This endpoint checks the availability of a domain name. Multiple TLDs can be checked at once.
+
+Endpoint has rate limit of 10 requests per minute.
+   */
+  "undefined": {
+    params: {
+      /**
+       * domain property
+       */
+      domain: string;
+      /**
+       * tlds property
+       */
+      tlds: array;
+      /**
+       * with_alternatives property
+       */
+      with_alternatives?: boolean;
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
    * This endpoint retrieves a list of all domains associated with your account.
    */
   "undefined": {

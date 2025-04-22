@@ -388,6 +388,38 @@ const TOOLS = [
     ]
   },
   {
+    "name": "domains_checkDomainAvailabilityV1",
+    "description": "This endpoint checks the availability of a domain name. Multiple TLDs can be checked at once.\n\nEndpoint has rate limit of 10 requests per minute.",
+    "method": "POST",
+    "path": "/api/domains/v1/availability",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "domain property"
+        },
+        "tlds": {
+          "type": "array",
+          "description": "tlds property"
+        },
+        "with_alternatives": {
+          "type": "boolean",
+          "description": "with_alternatives property"
+        }
+      },
+      "required": [
+        "domain",
+        "tlds"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
     "name": "domains_getDomainListV1",
     "description": "This endpoint retrieves a list of all domains associated with your account.",
     "method": "GET",
@@ -1832,7 +1864,7 @@ const SECURITY_SCHEMES = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.20
+ * Generated from OpenAPI spec version 0.0.25
  */
 class MCPServer {
   constructor() {
@@ -1850,7 +1882,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.10",
+        version: "0.0.11",
       },
       {
         capabilities: {
@@ -1875,7 +1907,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.10';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.11';
     
     return headers;
   }

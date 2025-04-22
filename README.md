@@ -299,6 +299,21 @@ If there is validation error, the response will fail with `422 Validation error`
 - `overwrite`: If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created. 
 - `zone`: zone property (required)
 
+### domains_checkDomainAvailabilityV1
+
+This endpoint checks the availability of a domain name. Multiple TLDs can be checked at once.
+
+Endpoint has rate limit of 10 requests per minute.
+
+- **Method**: `POST`
+- **Path**: `/api/domains/v1/availability`
+
+**Parameters**:
+
+- `domain`: domain property (required)
+- `tlds`: tlds property (required)
+- `with_alternatives`: with_alternatives property 
+
 ### domains_getDomainListV1
 
 This endpoint retrieves a list of all domains associated with your account.
