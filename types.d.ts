@@ -38,7 +38,7 @@ We recommend use other payment methods than `credit_card` if you encounter this 
        */
       items: array;
       /**
-       * coupons property
+       * Discount coupon codes
        */
       coupons?: array;
     };
@@ -50,10 +50,7 @@ We recommend use other payment methods than `credit_card` if you encounter this 
    */
   "undefined": {
     params: {
-      /**
-       * Payment method ID
-       */
-      paymentMethodId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -63,10 +60,7 @@ We recommend use other payment methods than `credit_card` if you encounter this 
    */
   "undefined": {
     params: {
-      /**
-       * Payment method ID
-       */
-      paymentMethodId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -88,10 +82,7 @@ If you want to add new payment method, please use [hPanel](https://hpanel.hostin
    */
   "undefined": {
     params: {
-      /**
-       * Subscription ID
-       */
-      subscriptionId: string;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -111,14 +102,7 @@ If you want to add new payment method, please use [hPanel](https://hpanel.hostin
    */
   "undefined": {
     params: {
-      /**
-       * Domain name
-       */
-      domain: string;
-      /**
-       * Snapshot ID
-       */
-      snapshotId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -128,10 +112,7 @@ If you want to add new payment method, please use [hPanel](https://hpanel.hostin
    */
   "undefined": {
     params: {
-      /**
-       * Domain name
-       */
-      domain: string;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -141,14 +122,7 @@ If you want to add new payment method, please use [hPanel](https://hpanel.hostin
    */
   "undefined": {
     params: {
-      /**
-       * Domain name
-       */
-      domain: string;
-      /**
-       * Snapshot ID
-       */
-      snapshotId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -158,10 +132,7 @@ If you want to add new payment method, please use [hPanel](https://hpanel.hostin
    */
   "undefined": {
     params: {
-      /**
-       * Domain name
-       */
-      domain: string;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -174,10 +145,6 @@ Otherwise existing records will be updated and new records will be added.
    */
   "undefined": {
     params: {
-      /**
-       * Domain name
-       */
-      domain: string;
       /**
        * If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created.
        */
@@ -200,10 +167,7 @@ refer to the `Update zone records` endpoint.
    */
   "undefined": {
     params: {
-      /**
-       * Domain name
-       */
-      domain: string;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -213,10 +177,6 @@ refer to the `Update zone records` endpoint.
    */
   "undefined": {
     params: {
-      /**
-       * Domain name
-       */
-      domain: string;
       /**
        * Determines if operation should be run synchronously
        */
@@ -242,10 +202,6 @@ If there is validation error, the response will fail with `422 Validation error`
   "undefined": {
     params: {
       /**
-       * Domain name
-       */
-      domain: string;
-      /**
        * If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created.
        */
       overwrite?: boolean;
@@ -265,15 +221,15 @@ Endpoint has rate limit of 10 requests per minute.
   "undefined": {
     params: {
       /**
-       * domain property
+       * Domain name without TLD
        */
       domain: string;
       /**
-       * tlds property
+       * TLDs to check (without trailing dot)
        */
       tlds: array;
       /**
-       * with_alternatives property
+       * Should response include alternatives
        */
       with_alternatives?: boolean;
     };
@@ -281,7 +237,238 @@ Endpoint has rate limit of 10 requests per minute.
   };
 
   /**
+   * This endpoint retrieves domain forwarding data.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint deletes domain forwarding data.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint creates domain forwarding data.
+   */
+  "undefined": {
+    params: {
+      /**
+       * Domain name
+       */
+      domain: string;
+      /**
+       * Redirect type
+       */
+      redirect_type: string;
+      /**
+       * URL to forward domain to
+       */
+      redirect_url: string;
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint enables domain lock for the domain. When domain lock is enabled, 
+the domain cannot be transferred to another registrar without first disabling the lock.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint disables domain lock for the domain. Domain lock needs to be disabled 
+before transferring the domain to another registrar.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint retrieves details for specified domain.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
    * This endpoint retrieves a list of all domains associated with your account.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint purchases and registers new domain. If registration fails, login to hPanel and check the domain registration status.
+
+If no payment method is provided, default will be used.
+
+If no WHOIS information is provided, default for that TLD will be used. 
+Before making request make sure that WHOIS information for TLD exists.
+
+Some TLDs require `additional_details` to be provided and will be validated before making purchase.
+   */
+  "undefined": {
+    params: {
+      /**
+       * Domain name
+       */
+      domain: string;
+      /**
+       * Catalog price item ID
+       */
+      item_id: string;
+      /**
+       * Payment method ID
+       */
+      payment_method_id?: number;
+      /**
+       * Domain contact information
+       */
+      domain_contacts?: object;
+      /**
+       * Additional registration data, possible values depends on TLD
+       */
+      additional_details?: object;
+      /**
+       * Discount coupon codes
+       */
+      coupons?: array;
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint enables privacy protection for the domain.
+When privacy protection is enabled, the domain owner's personal information is hidden from the public WHOIS database.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint disables privacy protection for the domain.
+When privacy protection is disabled, the domain owner's personal information is visible in the public WHOIS database.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint sets the nameservers for a specified domain.
+
+Be aware, that improper nameserver configuration can lead to the domain being unresolvable or unavailable. 
+   */
+  "undefined": {
+    params: {
+      /**
+       * First name server
+       */
+      ns1: string;
+      /**
+       * Second name server
+       */
+      ns2: string;
+      /**
+       * Third name server
+       */
+      ns3?: string;
+      /**
+       * Fourth name server
+       */
+      ns4?: string;
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint retrieves a WHOIS contact profile.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint deletes WHOIS contact profile.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint retrieves a list of WHOIS contact profiles.
+   */
+  "undefined": {
+    params: {
+
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint creates WHOIS contact profile.
+   */
+  "undefined": {
+    params: {
+      /**
+       * TLD of the domain (without trailing dot)
+       */
+      tld: string;
+      /**
+       * ISO 3166 2-letter country code
+       */
+      country: string;
+      /**
+       * Legal entity type
+       */
+      entity_type: string;
+      /**
+       * TLD details
+       */
+      tld_details?: object;
+      /**
+       * WHOIS details
+       */
+      whois_details: object;
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
+   * This endpoint retrieves a domain list where provided WHOIS contact profile is used.
    */
   "undefined": {
     params: {
@@ -307,14 +494,7 @@ Only one firewall can be active for a virtual machine at a time.
    */
   "undefined": {
     params: {
-      /**
-       * Firewall ID
-       */
-      firewallId: number;
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -324,14 +504,7 @@ Only one firewall can be active for a virtual machine at a time.
    */
   "undefined": {
     params: {
-      /**
-       * Firewall ID
-       */
-      firewallId: number;
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -341,10 +514,7 @@ Only one firewall can be active for a virtual machine at a time.
    */
   "undefined": {
     params: {
-      /**
-       * Firewall ID
-       */
-      firewallId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -356,10 +526,7 @@ Any virtual machine that has this firewall activated will automatically have it 
    */
   "undefined": {
     params: {
-      /**
-       * Firewall ID
-       */
-      firewallId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -369,10 +536,7 @@ Any virtual machine that has this firewall activated will automatically have it 
    */
   "undefined": {
     params: {
-      /**
-       * Page number
-       */
-      page?: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -397,14 +561,6 @@ Any virtual machine that has this firewall activated will loose sync with the fi
    */
   "undefined": {
     params: {
-      /**
-       * Firewall ID
-       */
-      firewallId: number;
-      /**
-       * Firewall Rule ID
-       */
-      ruleId: number;
       /**
        * protocol property
        */
@@ -432,14 +588,7 @@ Any virtual machine that has this firewall activated will loose sync with the fi
    */
   "undefined": {
     params: {
-      /**
-       * Firewall ID
-       */
-      firewallId: number;
-      /**
-       * Firewall Rule ID
-       */
-      ruleId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -452,10 +601,6 @@ Any virtual machine that has this firewall activated will loose sync with the fi
    */
   "undefined": {
     params: {
-      /**
-       * Firewall ID
-       */
-      firewallId: number;
       /**
        * protocol property
        */
@@ -483,14 +628,7 @@ Firewall can loose sync with virtual machine if the firewall has new rules added
    */
   "undefined": {
     params: {
-      /**
-       * Firewall ID
-       */
-      firewallId: number;
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -500,10 +638,7 @@ Firewall can loose sync with virtual machine if the firewall has new rules added
    */
   "undefined": {
     params: {
-      /**
-       * Post-install script ID
-       */
-      postInstallScriptId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -513,10 +648,6 @@ Firewall can loose sync with virtual machine if the firewall has new rules added
    */
   "undefined": {
     params: {
-      /**
-       * Post-install script ID
-       */
-      postInstallScriptId: number;
       /**
        * Name of the script
        */
@@ -534,10 +665,7 @@ Firewall can loose sync with virtual machine if the firewall has new rules added
    */
   "undefined": {
     params: {
-      /**
-       * Post-install script ID
-       */
-      postInstallScriptId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -547,10 +675,7 @@ Firewall can loose sync with virtual machine if the firewall has new rules added
    */
   "undefined": {
     params: {
-      /**
-       * Page number
-       */
-      page?: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -584,10 +709,6 @@ Multiple keys can be attached to a single virtual machine.
   "undefined": {
     params: {
       /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
-      /**
        * Public Key IDs to attach
        */
       ids: array;
@@ -602,10 +723,7 @@ Multiple keys can be attached to a single virtual machine.
    */
   "undefined": {
     params: {
-      /**
-       * Public Key ID
-       */
-      publicKeyId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -615,10 +733,7 @@ Multiple keys can be attached to a single virtual machine.
    */
   "undefined": {
     params: {
-      /**
-       * Page number
-       */
-      page?: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -646,10 +761,7 @@ which can then be attached to virtual machine instances for secure access.
    */
   "undefined": {
     params: {
-      /**
-       * Template ID
-       */
-      templateId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -671,14 +783,7 @@ This endpoint allows you to view detailed information about a particular action,
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
-      /**
-       * Action ID
-       */
-      actionId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -692,14 +797,7 @@ such as the action name, timestamp, and status.
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
-      /**
-       * Page number
-       */
-      page?: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -709,14 +807,7 @@ such as the action name, timestamp, and status.
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
-      /**
-       * Page number
-       */
-      page?: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -726,14 +817,7 @@ such as the action name, timestamp, and status.
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
-      /**
-       * Backup ID
-       */
-      backupId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -743,14 +827,7 @@ such as the action name, timestamp, and status.
    */
   "undefined": {
     params: {
-      /**
-       * Page number
-       */
-      page?: number;
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -764,14 +841,7 @@ The system will then initiate the restore process, which may take some time depe
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
-      /**
-       * Backup ID
-       */
-      backupId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -785,10 +855,6 @@ you need to point your domain A/AAAA records to virtual machine IP as well.
   "undefined": {
     params: {
       /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
-      /**
        * hostname property
        */
       hostname: string;
@@ -801,10 +867,7 @@ you need to point your domain A/AAAA records to virtual machine IP as well.
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -814,10 +877,7 @@ you need to point your domain A/AAAA records to virtual machine IP as well.
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -840,10 +900,7 @@ virtual machine and assessing the effectiveness of the malware scanner.
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -856,10 +913,7 @@ By installing Monarx, users can enhance the security of their virtual machines, 
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -870,10 +924,7 @@ If Monarx is not installed, the request will still be processed without any effe
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -889,10 +940,6 @@ It includes the following metrics:
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
       /**
        * the date-time notation as defined by RFC 3339, section 5.6
        */
@@ -912,10 +959,6 @@ Be aware, that improper nameserver configuration can lead to the virtual machine
   "undefined": {
     params: {
       /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
-      /**
        * ns1 property
        */
       ns1: string;
@@ -932,10 +975,7 @@ Be aware, that improper nameserver configuration can lead to the virtual machine
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -947,10 +987,7 @@ Once deleted, reverse DNS lookups to the virtual machine's IP address will no lo
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -962,10 +999,6 @@ Requirements for the password is the same as in the [recreate virtual machine en
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
       /**
        * Panel password for the virtual machine
        */
@@ -985,10 +1018,6 @@ Virtual machine will boot recovery disk image and original disk image will be mo
   "undefined": {
     params: {
       /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
-      /**
        * Temporary root password for recovery mode
        */
       root_password: string;
@@ -1002,10 +1031,7 @@ If virtual machine is not in recovery mode, this operation will fail.
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -1029,10 +1055,6 @@ Requirements for the password are:
   "undefined": {
     params: {
       /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
-      /**
        * Template ID
        */
       template_id: number;
@@ -1054,10 +1076,7 @@ If the virtual machine was stopped, it will be started.
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -1068,10 +1087,6 @@ Requirements for the password is the same as in the [recreate virtual machine en
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
       /**
        * Root password for the virtual machine
        */
@@ -1086,10 +1101,6 @@ New virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/bill
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
       /**
        * Template ID
        */
@@ -1139,10 +1150,7 @@ New virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/bill
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -1158,10 +1166,7 @@ and testing changes without affecting the current state of the virtual machine.
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -1171,10 +1176,7 @@ and testing changes without affecting the current state of the virtual machine.
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -1185,10 +1187,7 @@ Restoring from a snapshot allows users to revert the virtual machine to that sta
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -1199,10 +1198,7 @@ If the virtual machine is already running, the request will still be processed w
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };
@@ -1213,10 +1209,7 @@ If the virtual machine is already stopped, the request will still be processed w
    */
   "undefined": {
     params: {
-      /**
-       * Virtual Machine ID
-       */
-      virtualMachineId: number;
+
     };
     response: any; // Response structure will depend on the API
   };

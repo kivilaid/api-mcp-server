@@ -148,7 +148,7 @@ We recommend use other payment methods than `credit_card` if you encounter this 
 
 - `payment_method_id`: Payment method ID (required)
 - `items`: items property (required)
-- `coupons`: coupons property 
+- `coupons`: Discount coupon codes 
 
 ### billing_setDefaultPaymentMethodV1
 
@@ -157,9 +157,7 @@ This endpoint sets default payment method for your account.
 - **Method**: `POST`
 - **Path**: `/api/billing/v1/payment-methods/{paymentMethodId}`
 
-**Parameters**:
 
-- `paymentMethodId`: Payment method ID (required)
 
 ### billing_deletePaymentMethodV1
 
@@ -168,9 +166,7 @@ This endpoint deletes a payment method from your account.
 - **Method**: `DELETE`
 - **Path**: `/api/billing/v1/payment-methods/{paymentMethodId}`
 
-**Parameters**:
 
-- `paymentMethodId`: Payment method ID (required)
 
 ### billing_getPaymentMethodListV1
 
@@ -190,9 +186,7 @@ This endpoint cancels a subscription and stops any further billing.
 - **Method**: `DELETE`
 - **Path**: `/api/billing/v1/subscriptions/{subscriptionId}`
 
-**Parameters**:
 
-- `subscriptionId`: Subscription ID (required)
 
 ### billing_getSubscriptionListV1
 
@@ -210,10 +204,7 @@ This endpoint retrieves particular DNS snapshot with the contents of DNS zone re
 - **Method**: `GET`
 - **Path**: `/api/dns/v1/snapshots/{domain}/{snapshotId}`
 
-**Parameters**:
 
-- `domain`: Domain name (required)
-- `snapshotId`: Snapshot ID (required)
 
 ### DNS_getSnapshotListV1
 
@@ -222,9 +213,7 @@ This endpoint retrieves list of DNS snapshots.
 - **Method**: `GET`
 - **Path**: `/api/dns/v1/snapshots/{domain}`
 
-**Parameters**:
 
-- `domain`: Domain name (required)
 
 ### DNS_restoreSnapshotV1
 
@@ -233,10 +222,7 @@ This endpoint restores DNS zone to the selected snapshot.
 - **Method**: `POST`
 - **Path**: `/api/dns/v1/snapshots/{domain}/{snapshotId}/restore`
 
-**Parameters**:
 
-- `domain`: Domain name (required)
-- `snapshotId`: Snapshot ID (required)
 
 ### DNS_getRecordsV1
 
@@ -245,9 +231,7 @@ This endpoint retrieves DNS zone records for a specific domain.
 - **Method**: `GET`
 - **Path**: `/api/dns/v1/zones/{domain}`
 
-**Parameters**:
 
-- `domain`: Domain name (required)
 
 ### DNS_updateZoneRecordsV1
 
@@ -261,7 +245,6 @@ Otherwise existing records will be updated and new records will be added.
 
 **Parameters**:
 
-- `domain`: Domain name (required)
 - `overwrite`: If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created. 
 - `zone`: zone property (required)
 
@@ -277,9 +260,7 @@ refer to the `Update zone records` endpoint.
 - **Method**: `DELETE`
 - **Path**: `/api/dns/v1/zones/{domain}`
 
-**Parameters**:
 
-- `domain`: Domain name (required)
 
 ### DNS_resetZoneRecordsV1
 
@@ -290,7 +271,6 @@ This endpoint resets DNS zone to the default records.
 
 **Parameters**:
 
-- `domain`: Domain name (required)
 - `sync`: Determines if operation should be run synchronously 
 - `reset_email_records`: Determines if email records should be reset 
 - `whitelisted_record_types`: Specifies which record types to not reset 
@@ -307,7 +287,6 @@ If there is validation error, the response will fail with `422 Validation error`
 
 **Parameters**:
 
-- `domain`: Domain name (required)
 - `overwrite`: If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created. 
 - `zone`: zone property (required)
 
@@ -322,9 +301,69 @@ Endpoint has rate limit of 10 requests per minute.
 
 **Parameters**:
 
-- `domain`: domain property (required)
-- `tlds`: tlds property (required)
-- `with_alternatives`: with_alternatives property 
+- `domain`: Domain name without TLD (required)
+- `tlds`: TLDs to check (without trailing dot) (required)
+- `with_alternatives`: Should response include alternatives 
+
+### domains_getForwardingDataV1
+
+This endpoint retrieves domain forwarding data.
+
+- **Method**: `GET`
+- **Path**: `/api/domains/v1/forwarding/{domain}`
+
+
+
+### domains_deleteForwardingDataV1
+
+This endpoint deletes domain forwarding data.
+
+- **Method**: `DELETE`
+- **Path**: `/api/domains/v1/forwarding/{domain}`
+
+
+
+### domains_createForwardingDataV1
+
+This endpoint creates domain forwarding data.
+
+- **Method**: `POST`
+- **Path**: `/api/domains/v1/forwarding`
+
+**Parameters**:
+
+- `domain`: Domain name (required)
+- `redirect_type`: Redirect type (required)
+- `redirect_url`: URL to forward domain to (required)
+
+### domains_enableDomainLockV1
+
+This endpoint enables domain lock for the domain. When domain lock is enabled, 
+the domain cannot be transferred to another registrar without first disabling the lock.
+
+- **Method**: `PUT`
+- **Path**: `/api/domains/v1/portfolio/{domain}/domain-lock`
+
+
+
+### domains_disableDomainLockV1
+
+This endpoint disables domain lock for the domain. Domain lock needs to be disabled 
+before transferring the domain to another registrar.
+
+- **Method**: `DELETE`
+- **Path**: `/api/domains/v1/portfolio/{domain}/domain-lock`
+
+
+
+### domains_getDomainV1
+
+This endpoint retrieves details for specified domain.
+
+- **Method**: `GET`
+- **Path**: `/api/domains/v1/portfolio/{domain}`
+
+
 
 ### domains_getDomainListV1
 
@@ -332,6 +371,116 @@ This endpoint retrieves a list of all domains associated with your account.
 
 - **Method**: `GET`
 - **Path**: `/api/domains/v1/portfolio`
+
+
+
+### domains_purchaseNewDomainV1
+
+This endpoint purchases and registers new domain. If registration fails, login to hPanel and check the domain registration status.
+
+If no payment method is provided, default will be used.
+
+If no WHOIS information is provided, default for that TLD will be used. 
+Before making request make sure that WHOIS information for TLD exists.
+
+Some TLDs require `additional_details` to be provided and will be validated before making purchase.
+
+- **Method**: `POST`
+- **Path**: `/api/domains/v1/portfolio`
+
+**Parameters**:
+
+- `domain`: Domain name (required)
+- `item_id`: Catalog price item ID (required)
+- `payment_method_id`: Payment method ID 
+- `domain_contacts`: Domain contact information 
+- `additional_details`: Additional registration data, possible values depends on TLD 
+- `coupons`: Discount coupon codes 
+
+### domains_enablePrivacyProtectionV1
+
+This endpoint enables privacy protection for the domain.
+When privacy protection is enabled, the domain owner's personal information is hidden from the public WHOIS database.
+
+- **Method**: `PUT`
+- **Path**: `/api/domains/v1/portfolio/{domain}/privacy-protection`
+
+
+
+### domains_disablePrivacyProtectionV1
+
+This endpoint disables privacy protection for the domain.
+When privacy protection is disabled, the domain owner's personal information is visible in the public WHOIS database.
+
+- **Method**: `DELETE`
+- **Path**: `/api/domains/v1/portfolio/{domain}/privacy-protection`
+
+
+
+### domains_updateNameserversV1
+
+This endpoint sets the nameservers for a specified domain.
+
+Be aware, that improper nameserver configuration can lead to the domain being unresolvable or unavailable. 
+
+- **Method**: `PUT`
+- **Path**: `/api/domains/v1/portfolio/{domain}/nameservers`
+
+**Parameters**:
+
+- `ns1`: First name server (required)
+- `ns2`: Second name server (required)
+- `ns3`: Third name server 
+- `ns4`: Fourth name server 
+
+### domains_getWHOISProfileV1
+
+This endpoint retrieves a WHOIS contact profile.
+
+- **Method**: `GET`
+- **Path**: `/api/domains/v1/whois/{whoisId}`
+
+
+
+### domains_deleteWHOISProfileV1
+
+This endpoint deletes WHOIS contact profile.
+
+- **Method**: `DELETE`
+- **Path**: `/api/domains/v1/whois/{whoisId}`
+
+
+
+### domains_getWHOISProfileListV1
+
+This endpoint retrieves a list of WHOIS contact profiles.
+
+- **Method**: `GET`
+- **Path**: `/api/domains/v1/whois`
+
+
+
+### domains_createWHOISProfileV1
+
+This endpoint creates WHOIS contact profile.
+
+- **Method**: `POST`
+- **Path**: `/api/domains/v1/whois`
+
+**Parameters**:
+
+- `tld`: TLD of the domain (without trailing dot) (required)
+- `country`: ISO 3166 2-letter country code (required)
+- `entity_type`: Legal entity type (required)
+- `tld_details`: TLD details 
+- `whois_details`: WHOIS details (required)
+
+### domains_getWHOISProfileUsageV1
+
+This endpoint retrieves a domain list where provided WHOIS contact profile is used.
+
+- **Method**: `GET`
+- **Path**: `/api/domains/v1/whois/{whoisId}/usage`
 
 
 
@@ -353,10 +502,7 @@ Only one firewall can be active for a virtual machine at a time.
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/firewall/{firewallId}/activate/{virtualMachineId}`
 
-**Parameters**:
 
-- `firewallId`: Firewall ID (required)
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_deactivateFirewallV1
 
@@ -365,10 +511,7 @@ This endpoint deactivates a firewall for a specified virtual machine.
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/firewall/{firewallId}/deactivate/{virtualMachineId}`
 
-**Parameters**:
 
-- `firewallId`: Firewall ID (required)
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_getFirewallV1
 
@@ -377,9 +520,7 @@ This endpoint retrieves firewall by its ID and rules associated with it.
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/firewall/{firewallId}`
 
-**Parameters**:
 
-- `firewallId`: Firewall ID (required)
 
 ### VPS_deleteFirewallV1
 
@@ -390,9 +531,7 @@ Any virtual machine that has this firewall activated will automatically have it 
 - **Method**: `DELETE`
 - **Path**: `/api/vps/v1/firewall/{firewallId}`
 
-**Parameters**:
 
-- `firewallId`: Firewall ID (required)
 
 ### VPS_getFirewallListV1
 
@@ -401,9 +540,7 @@ This endpoint retrieves a list of all firewalls available.
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/firewall`
 
-**Parameters**:
 
-- `page`: Page number 
 
 ### VPS_createNewFirewallV1
 
@@ -427,8 +564,6 @@ Any virtual machine that has this firewall activated will loose sync with the fi
 
 **Parameters**:
 
-- `firewallId`: Firewall ID (required)
-- `ruleId`: Firewall Rule ID (required)
 - `protocol`: protocol property (required)
 - `port`: Port or port range, ex: 1024:2048 (required)
 - `source`: source property (required)
@@ -443,10 +578,7 @@ Any virtual machine that has this firewall activated will loose sync with the fi
 - **Method**: `DELETE`
 - **Path**: `/api/vps/v1/firewall/{firewallId}/rules/{ruleId}`
 
-**Parameters**:
 
-- `firewallId`: Firewall ID (required)
-- `ruleId`: Firewall Rule ID (required)
 
 ### VPS_createFirewallRuleV1
 
@@ -460,7 +592,6 @@ Any virtual machine that has this firewall activated will loose sync with the fi
 
 **Parameters**:
 
-- `firewallId`: Firewall ID (required)
 - `protocol`: protocol property (required)
 - `port`: Port or port range, ex: 1024:2048 (required)
 - `source`: source property (required)
@@ -475,10 +606,7 @@ Firewall can loose sync with virtual machine if the firewall has new rules added
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/firewall/{firewallId}/sync/{virtualMachineId}`
 
-**Parameters**:
 
-- `firewallId`: Firewall ID (required)
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_getPostInstallScriptV1
 
@@ -487,9 +615,7 @@ This endpoint retrieves post-install script by its ID.
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/post-install-scripts/{postInstallScriptId}`
 
-**Parameters**:
 
-- `postInstallScriptId`: Post-install script ID (required)
 
 ### VPS_updatePostInstallScriptV1
 
@@ -500,7 +626,6 @@ This endpoint updates a specific post-install script.
 
 **Parameters**:
 
-- `postInstallScriptId`: Post-install script ID (required)
 - `name`: Name of the script (required)
 - `content`: Content of the script (required)
 
@@ -511,9 +636,7 @@ This endpoint deletes a post-install script from your account.
 - **Method**: `DELETE`
 - **Path**: `/api/vps/v1/post-install-scripts/{postInstallScriptId}`
 
-**Parameters**:
 
-- `postInstallScriptId`: Post-install script ID (required)
 
 ### VPS_getPostInstallScriptListV1
 
@@ -522,9 +645,7 @@ This endpoint retrieves a list of post-install scripts associated with your acco
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/post-install-scripts`
 
-**Parameters**:
 
-- `page`: Page number 
 
 ### VPS_createPostInstallScriptV1
 
@@ -553,7 +674,6 @@ Multiple keys can be attached to a single virtual machine.
 
 **Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 - `ids`: Public Key IDs to attach (required)
 
 ### VPS_deleteAPublicKeyV1
@@ -565,9 +685,7 @@ This endpoint deletes a public key from your account.
 - **Method**: `DELETE`
 - **Path**: `/api/vps/v1/public-keys/{publicKeyId}`
 
-**Parameters**:
 
-- `publicKeyId`: Public Key ID (required)
 
 ### VPS_getPublicKeyListV1
 
@@ -576,9 +694,7 @@ This endpoint retrieves a list of public keys associated with your account.
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/public-keys`
 
-**Parameters**:
 
-- `page`: Page number 
 
 ### VPS_createNewPublicKeyV1
 
@@ -600,9 +716,7 @@ This endpoint retrieves details of a specific OS template for virtual machines.
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/templates/{templateId}`
 
-**Parameters**:
 
-- `templateId`: Template ID (required)
 
 ### VPS_getTemplateListV1
 
@@ -622,10 +736,7 @@ This endpoint allows you to view detailed information about a particular action,
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/actions/{actionId}`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
-- `actionId`: Action ID (required)
 
 ### VPS_getActionListV1
 
@@ -638,10 +749,7 @@ such as the action name, timestamp, and status.
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/actions`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
-- `page`: Page number 
 
 ### VPS_getAttachedPublicKeysV1
 
@@ -650,10 +758,7 @@ This endpoint retrieves a list of public keys attached to a specified virtual ma
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/public-keys`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
-- `page`: Page number 
 
 ### VPS_deleteBackupV1
 
@@ -662,10 +767,7 @@ This endpoint deletes a specified backup for a virtual machine.
 - **Method**: `DELETE`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/backups/{backupId}`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
-- `backupId`: Backup ID (required)
 
 ### VPS_getBackupListV1
 
@@ -674,10 +776,7 @@ This endpoint retrieves a list of backups for a specified virtual machine.
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/backups`
 
-**Parameters**:
 
-- `page`: Page number 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_restoreBackupV1
 
@@ -690,10 +789,7 @@ The system will then initiate the restore process, which may take some time depe
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/backups/{backupId}/restore`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
-- `backupId`: Backup ID (required)
 
 ### VPS_setHostnameV1
 
@@ -707,7 +803,6 @@ you need to point your domain A/AAAA records to virtual machine IP as well.
 
 **Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 - `hostname`: hostname property (required)
 
 ### VPS_resetHostnameV1
@@ -717,9 +812,7 @@ This endpoint resets the hostname and PTR record of a specified virtual machine 
 - **Method**: `DELETE`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/hostname`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_getVirtualMachineV1
 
@@ -728,9 +821,7 @@ This endpoint retrieves detailed information about a specified virtual machine.
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_getVirtualMachineListV1
 
@@ -751,9 +842,7 @@ virtual machine and assessing the effectiveness of the malware scanner.
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/monarx`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_installMonarxV1
 
@@ -765,9 +854,7 @@ By installing Monarx, users can enhance the security of their virtual machines, 
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/monarx`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_uninstallMonarxV1
 
@@ -777,9 +864,7 @@ If Monarx is not installed, the request will still be processed without any effe
 - **Method**: `DELETE`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/monarx`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_getMetricsV1
 
@@ -796,7 +881,6 @@ It includes the following metrics:
 
 **Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 - `date_from`: the date-time notation as defined by RFC 3339, section 5.6 (required)
 - `date_to`: the date-time notation as defined by RFC 3339, section 5.6 (required)
 
@@ -810,7 +894,6 @@ Be aware, that improper nameserver configuration can lead to the virtual machine
 
 **Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 - `ns1`: ns1 property (required)
 - `ns2`: ns2 property 
 
@@ -821,9 +904,7 @@ This endpoint creates or updates a PTR (Pointer) record for a specified virtual 
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/ptr`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_deletePTRRecordV1
 
@@ -834,9 +915,7 @@ Once deleted, reverse DNS lookups to the virtual machine's IP address will no lo
 - **Method**: `DELETE`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/ptr`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_setPanelPasswordV1
 
@@ -849,7 +928,6 @@ Requirements for the password is the same as in the [recreate virtual machine en
 
 **Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 - `password`: Panel password for the virtual machine (required)
 
 ### VPS_startRecoveryModeV1
@@ -866,7 +944,6 @@ Virtual machine will boot recovery disk image and original disk image will be mo
 
 **Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 - `root_password`: Temporary root password for recovery mode (required)
 
 ### VPS_stopRecoveryModeV1
@@ -877,9 +954,7 @@ If virtual machine is not in recovery mode, this operation will fail.
 - **Method**: `DELETE`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/recovery`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_recreateVirtualMachineV1
 
@@ -903,7 +978,6 @@ Requirements for the password are:
 
 **Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 - `template_id`: Template ID (required)
 - `password`: Password for the virtual machine. If not provided, random password will be generated. Password will not be shown in the response. 
 - `post_install_script_id`: Post-install script ID 
@@ -916,9 +990,7 @@ If the virtual machine was stopped, it will be started.
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/restart`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_setRootPasswordV1
 
@@ -930,7 +1002,6 @@ Requirements for the password is the same as in the [recreate virtual machine en
 
 **Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 - `password`: Root password for the virtual machine (required)
 
 ### VPS_setupNewVirtualMachineV1
@@ -943,7 +1014,6 @@ New virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/bill
 
 **Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 - `template_id`: Template ID (required)
 - `data_center_id`: Data center ID (required)
 - `post_install_script_id`: Post-install script ID 
@@ -962,9 +1032,7 @@ This endpoint retrieves a snapshot for a specified virtual machine.
 - **Method**: `GET`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_createSnapshotV1
 
@@ -979,9 +1047,7 @@ and testing changes without affecting the current state of the virtual machine.
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_deleteSnapshotV1
 
@@ -990,9 +1056,7 @@ This endpoint deletes a snapshot of a specified virtual machine.
 - **Method**: `DELETE`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_restoreSnapshotV1
 
@@ -1002,9 +1066,7 @@ Restoring from a snapshot allows users to revert the virtual machine to that sta
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot/restore`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_startVirtualMachineV1
 
@@ -1014,9 +1076,7 @@ If the virtual machine is already running, the request will still be processed w
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/start`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
 
 ### VPS_stopVirtualMachineV1
 
@@ -1026,6 +1086,4 @@ If the virtual machine is already stopped, the request will still be processed w
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/stop`
 
-**Parameters**:
 
-- `virtualMachineId`: Virtual Machine ID (required)
