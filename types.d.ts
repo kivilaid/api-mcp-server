@@ -259,17 +259,19 @@ If there is validation error, the response will fail with `422 Validation error`
 
   /**
    * This endpoint checks the availability of a domain name. Multiple TLDs can be checked at once.
+If you want to get alternative domains with response, provide only one TLD in the request and set `with_alternatives` to `true`.
+TLDs should be provided without the leading dot (e.g. `com`, `net`, `org`).
 
 Endpoint has rate limit of 10 requests per minute.
    */
   "undefined": {
     params: {
       /**
-       * Domain name without TLD
+       * Domain name (without TLD)
        */
       domain: string;
       /**
-       * TLDs to check (without trailing dot)
+       * TLDs to check (without leading dot)
        */
       tlds: array;
       /**
@@ -509,7 +511,7 @@ Be aware, that improper nameserver configuration can lead to the domain being un
   "undefined": {
     params: {
       /**
-       * Filter by TLD (without trailing dot)
+       * Filter by TLD (without leading dot)
        */
       tld?: string;
     };
@@ -522,7 +524,7 @@ Be aware, that improper nameserver configuration can lead to the domain being un
   "undefined": {
     params: {
       /**
-       * TLD of the domain (without trailing dot)
+       * TLD of the domain (without leading dot)
        */
       tld: string;
       /**

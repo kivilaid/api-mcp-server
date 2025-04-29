@@ -314,6 +314,8 @@ If there is validation error, the response will fail with `422 Validation error`
 ### domains_checkDomainAvailabilityV1
 
 This endpoint checks the availability of a domain name. Multiple TLDs can be checked at once.
+If you want to get alternative domains with response, provide only one TLD in the request and set `with_alternatives` to `true`.
+TLDs should be provided without the leading dot (e.g. `com`, `net`, `org`).
 
 Endpoint has rate limit of 10 requests per minute.
 
@@ -322,8 +324,8 @@ Endpoint has rate limit of 10 requests per minute.
 
 **Parameters**:
 
-- `domain`: Domain name without TLD (required)
-- `tlds`: TLDs to check (without trailing dot) (required)
+- `domain`: Domain name (without TLD) (required)
+- `tlds`: TLDs to check (without leading dot) (required)
 - `with_alternatives`: Should response include alternatives 
 
 ### domains_getForwardingDataV1
@@ -500,7 +502,7 @@ This endpoint retrieves a list of WHOIS contact profiles.
 
 **Parameters**:
 
-- `tld`: Filter by TLD (without trailing dot) 
+- `tld`: Filter by TLD (without leading dot) 
 
 ### domains_createWHOISProfileV1
 
@@ -511,7 +513,7 @@ This endpoint creates WHOIS contact profile.
 
 **Parameters**:
 
-- `tld`: TLD of the domain (without trailing dot) (required)
+- `tld`: TLD of the domain (without leading dot) (required)
 - `country`: ISO 3166 2-letter country code (required)
 - `entity_type`: Legal entity type (required)
 - `tld_details`: TLD details 

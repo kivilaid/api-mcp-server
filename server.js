@@ -392,7 +392,7 @@ const TOOLS = [
   },
   {
     "name": "domains_checkDomainAvailabilityV1",
-    "description": "This endpoint checks the availability of a domain name. Multiple TLDs can be checked at once.\n\nEndpoint has rate limit of 10 requests per minute.",
+    "description": "This endpoint checks the availability of a domain name. Multiple TLDs can be checked at once.\nIf you want to get alternative domains with response, provide only one TLD in the request and set `with_alternatives` to `true`.\nTLDs should be provided without the leading dot (e.g. `com`, `net`, `org`).\n\nEndpoint has rate limit of 10 requests per minute.",
     "method": "POST",
     "path": "/api/domains/v1/availability",
     "inputSchema": {
@@ -400,11 +400,11 @@ const TOOLS = [
       "properties": {
         "domain": {
           "type": "string",
-          "description": "Domain name without TLD"
+          "description": "Domain name (without TLD)"
         },
         "tlds": {
           "type": "array",
-          "description": "TLDs to check (without trailing dot)"
+          "description": "TLDs to check (without leading dot)"
         },
         "with_alternatives": {
           "type": "boolean",
@@ -777,7 +777,7 @@ const TOOLS = [
       "properties": {
         "tld": {
           "type": "string",
-          "description": "Filter by TLD (without trailing dot)"
+          "description": "Filter by TLD (without leading dot)"
         }
       },
       "required": []
@@ -798,7 +798,7 @@ const TOOLS = [
       "properties": {
         "tld": {
           "type": "string",
-          "description": "TLD of the domain (without trailing dot)"
+          "description": "TLD of the domain (without leading dot)"
         },
         "country": {
           "type": "string",
@@ -2286,7 +2286,7 @@ const SECURITY_SCHEMES = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.37
+ * Generated from OpenAPI spec version 0.0.38
  */
 class MCPServer {
   constructor() {
@@ -2304,7 +2304,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.15",
+        version: "0.0.16",
       },
       {
         capabilities: {
@@ -2329,7 +2329,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.15';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.16';
     
     return headers;
   }
