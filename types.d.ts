@@ -34,7 +34,7 @@ We recommend use other payment methods than `credit_card` if you encounter this 
        */
       payment_method_id: number;
       /**
-       * items property
+       * items parameter
        */
       items: array;
       /**
@@ -183,7 +183,7 @@ Otherwise existing records will be updated and new records will be added.
        */
       overwrite?: boolean;
       /**
-       * zone property
+       * zone parameter
        */
       zone: array;
     };
@@ -250,7 +250,7 @@ If there is validation error, the response will fail with `422 Validation error`
        */
       overwrite?: boolean;
       /**
-       * zone property
+       * zone parameter
        */
       zone: array;
     };
@@ -653,7 +653,7 @@ Any virtual machine that has this firewall activated will automatically have it 
   "undefined": {
     params: {
       /**
-       * name property
+       * name parameter
        */
       name: string;
     };
@@ -676,7 +676,7 @@ Any virtual machine that has this firewall activated will loose sync with the fi
        */
       ruleId: number;
       /**
-       * protocol property
+       * protocol parameter
        */
       protocol: string;
       /**
@@ -684,7 +684,7 @@ Any virtual machine that has this firewall activated will loose sync with the fi
        */
       port: string;
       /**
-       * source property
+       * source parameter
        */
       source: string;
       /**
@@ -727,7 +727,7 @@ Any virtual machine that has this firewall activated will loose sync with the fi
        */
       firewallId: number;
       /**
-       * protocol property
+       * protocol parameter
        */
       protocol: string;
       /**
@@ -735,7 +735,7 @@ Any virtual machine that has this firewall activated will loose sync with the fi
        */
       port: string;
       /**
-       * source property
+       * source parameter
        */
       source: string;
       /**
@@ -900,11 +900,11 @@ which can then be attached to virtual machine instances for secure access.
   "undefined": {
     params: {
       /**
-       * name property
+       * name parameter
        */
       name: string;
       /**
-       * key property
+       * key parameter
        */
       key: string;
     };
@@ -1059,7 +1059,7 @@ you need to point your domain A/AAAA records to virtual machine IP as well.
        */
       virtualMachineId: number;
       /**
-       * hostname property
+       * hostname parameter
        */
       hostname: string;
     };
@@ -1186,11 +1186,11 @@ Be aware, that improper nameserver configuration can lead to the virtual machine
        */
       virtualMachineId: number;
       /**
-       * ns1 property
+       * ns1 parameter
        */
       ns1: string;
       /**
-       * ns2 property
+       * ns2 parameter
        */
       ns2?: string;
     };
@@ -1389,15 +1389,15 @@ New virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/bill
        */
       enable_backups?: boolean;
       /**
-       * ns1 property
+       * ns1 parameter
        */
       ns1?: string;
       /**
-       * ns2 property
+       * ns2 parameter
        */
       ns2?: string;
       /**
-       * public_key property
+       * public_key parameter
        */
       public_key?: object;
     };

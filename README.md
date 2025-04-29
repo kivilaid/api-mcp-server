@@ -147,7 +147,7 @@ We recommend use other payment methods than `credit_card` if you encounter this 
 **Parameters**:
 
 - `payment_method_id`: Payment method ID (required)
-- `items`: items property (required)
+- `items`: items parameter (required)
 - `coupons`: Discount coupon codes 
 
 ### billing_setDefaultPaymentMethodV1
@@ -263,7 +263,7 @@ Otherwise existing records will be updated and new records will be added.
 
 - `domain`: Domain name (required)
 - `overwrite`: If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created. 
-- `zone`: zone property (required)
+- `zone`: zone parameter (required)
 
 ### DNS_deleteZoneRecordsV1
 
@@ -309,7 +309,7 @@ If there is validation error, the response will fail with `422 Validation error`
 
 - `domain`: Domain name (required)
 - `overwrite`: If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created. 
-- `zone`: zone property (required)
+- `zone`: zone parameter (required)
 
 ### domains_checkDomainAvailabilityV1
 
@@ -609,7 +609,7 @@ This endpoint creates a new firewall.
 
 **Parameters**:
 
-- `name`: name property (required)
+- `name`: name parameter (required)
 
 ### VPS_updateFirewallRuleV1
 
@@ -624,9 +624,9 @@ Any virtual machine that has this firewall activated will loose sync with the fi
 
 - `firewallId`: Firewall ID (required)
 - `ruleId`: Firewall Rule ID (required)
-- `protocol`: protocol property (required)
+- `protocol`: protocol parameter (required)
 - `port`: Port or port range, ex: 1024:2048 (required)
-- `source`: source property (required)
+- `source`: source parameter (required)
 - `source_detail`: IP range, CIDR, single IP or `any` (required)
 
 ### VPS_deleteFirewallRuleV1
@@ -656,9 +656,9 @@ Any virtual machine that has this firewall activated will loose sync with the fi
 **Parameters**:
 
 - `firewallId`: Firewall ID (required)
-- `protocol`: protocol property (required)
+- `protocol`: protocol parameter (required)
 - `port`: Port or port range, ex: 1024:2048 (required)
-- `source`: source property (required)
+- `source`: source parameter (required)
 - `source_detail`: IP range, CIDR, single IP or `any` (required)
 
 ### VPS_syncFirewallV1
@@ -785,8 +785,8 @@ which can then be attached to virtual machine instances for secure access.
 
 **Parameters**:
 
-- `name`: name property (required)
-- `key`: key property (required)
+- `name`: name parameter (required)
+- `key`: key parameter (required)
 
 ### VPS_getTemplateV1
 
@@ -903,7 +903,7 @@ you need to point your domain A/AAAA records to virtual machine IP as well.
 **Parameters**:
 
 - `virtualMachineId`: Virtual Machine ID (required)
-- `hostname`: hostname property (required)
+- `hostname`: hostname parameter (required)
 
 ### VPS_resetHostnameV1
 
@@ -1006,8 +1006,8 @@ Be aware, that improper nameserver configuration can lead to the virtual machine
 **Parameters**:
 
 - `virtualMachineId`: Virtual Machine ID (required)
-- `ns1`: ns1 property (required)
-- `ns2`: ns2 property 
+- `ns1`: ns1 parameter (required)
+- `ns2`: ns2 parameter 
 
 ### VPS_createPTRRecordV1
 
@@ -1146,9 +1146,9 @@ New virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/bill
 - `hostname`: Override default hostname of the virtual machine 
 - `install_monarx`: Install Monarx malware scanner (if supported) 
 - `enable_backups`: Enable weekly backup schedule 
-- `ns1`: ns1 property 
-- `ns2`: ns2 property 
-- `public_key`: public_key property 
+- `ns1`: ns1 parameter 
+- `ns2`: ns2 parameter 
+- `public_key`: public_key parameter 
 
 ### VPS_getSnapshotV1
 

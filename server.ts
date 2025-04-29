@@ -63,11 +63,33 @@ const TOOLS: OpenApiTool[] = [
         },
         "items": {
           "type": "array",
-          "description": "items property"
+          "description": "items parameter",
+          "items": {
+            "type": "object",
+            "description": "items parameter",
+            "properties": {
+              "item_id": {
+                "type": "string",
+                "description": "Price Item ID"
+              },
+              "quantity": {
+                "type": "integer",
+                "description": "quantity parameter"
+              }
+            },
+            "required": [
+              "item_id",
+              "quantity"
+            ]
+          }
         },
         "coupons": {
           "type": "array",
-          "description": "Discount coupon codes"
+          "description": "Discount coupon codes",
+          "items": {
+            "type": "string",
+            "description": "coupons parameter"
+          }
         }
       },
       "required": [
@@ -302,7 +324,59 @@ const TOOLS: OpenApiTool[] = [
         },
         "zone": {
           "type": "array",
-          "description": "zone property"
+          "description": "zone parameter",
+          "items": {
+            "type": "object",
+            "description": "zone parameter",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the record (use `@` for wildcard name)"
+              },
+              "records": {
+                "type": "array",
+                "description": "Records assigned to the name",
+                "items": {
+                  "type": "object",
+                  "description": "records parameter",
+                  "properties": {
+                    "content": {
+                      "type": "string",
+                      "description": "Content of the name record"
+                    }
+                  },
+                  "required": [
+                    "content"
+                  ]
+                }
+              },
+              "ttl": {
+                "type": "integer",
+                "description": "TTL (Time-To-Live) of the record"
+              },
+              "type": {
+                "type": "string",
+                "description": "Type of the record",
+                "enum": [
+                  "A",
+                  "AAAA",
+                  "CNAME",
+                  "ALIAS",
+                  "MX",
+                  "TXT",
+                  "NS",
+                  "SOA",
+                  "SRV",
+                  "CAA"
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "record",
+              "type"
+            ]
+          }
         }
       },
       "required": [
@@ -361,7 +435,11 @@ const TOOLS: OpenApiTool[] = [
         },
         "whitelisted_record_types": {
           "type": "array",
-          "description": "Specifies which record types to not reset"
+          "description": "Specifies which record types to not reset",
+          "items": {
+            "type": "string",
+            "description": "whitelisted_record_types parameter"
+          }
         }
       },
       "required": [
@@ -392,7 +470,59 @@ const TOOLS: OpenApiTool[] = [
         },
         "zone": {
           "type": "array",
-          "description": "zone property"
+          "description": "zone parameter",
+          "items": {
+            "type": "object",
+            "description": "zone parameter",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the record (use `@` for wildcard name)"
+              },
+              "records": {
+                "type": "array",
+                "description": "Records assigned to the name",
+                "items": {
+                  "type": "object",
+                  "description": "records parameter",
+                  "properties": {
+                    "content": {
+                      "type": "string",
+                      "description": "Content of the name record"
+                    }
+                  },
+                  "required": [
+                    "content"
+                  ]
+                }
+              },
+              "ttl": {
+                "type": "integer",
+                "description": "TTL (Time-To-Live) of the record"
+              },
+              "type": {
+                "type": "string",
+                "description": "Type of the record",
+                "enum": [
+                  "A",
+                  "AAAA",
+                  "CNAME",
+                  "ALIAS",
+                  "MX",
+                  "TXT",
+                  "NS",
+                  "SOA",
+                  "SRV",
+                  "CAA"
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "record",
+              "type"
+            ]
+          }
         }
       },
       "required": [
@@ -420,7 +550,11 @@ const TOOLS: OpenApiTool[] = [
         },
         "tlds": {
           "type": "array",
-          "description": "TLDs to check (without leading dot)"
+          "description": "TLDs to check (without leading dot)",
+          "items": {
+            "type": "string",
+            "description": "tlds parameter"
+          }
         },
         "with_alternatives": {
           "type": "boolean",
@@ -628,15 +762,38 @@ const TOOLS: OpenApiTool[] = [
         },
         "domain_contacts": {
           "type": "object",
-          "description": "Domain contact information"
+          "description": "Domain contact information",
+          "properties": {
+            "owner_id": {
+              "type": "integer",
+              "description": "Owner contact WHOIS record ID"
+            },
+            "admin_id": {
+              "type": "integer",
+              "description": "Administrative contact WHOIS record ID"
+            },
+            "billing_id": {
+              "type": "integer",
+              "description": "Billing contact WHOIS record ID"
+            },
+            "tech_id": {
+              "type": "integer",
+              "description": "Technical contact WHOIS record ID"
+            }
+          }
         },
         "additional_details": {
           "type": "object",
-          "description": "Additional registration data, possible values depends on TLD"
+          "description": "Additional registration data, possible values depends on TLD",
+          "properties": {}
         },
         "coupons": {
           "type": "array",
-          "description": "Discount coupon codes"
+          "description": "Discount coupon codes",
+          "items": {
+            "type": "string",
+            "description": "coupons parameter"
+          }
         }
       },
       "required": [
@@ -830,11 +987,13 @@ const TOOLS: OpenApiTool[] = [
         },
         "tld_details": {
           "type": "object",
-          "description": "TLD details"
+          "description": "TLD details",
+          "properties": {}
         },
         "whois_details": {
           "type": "object",
-          "description": "WHOIS details"
+          "description": "WHOIS details",
+          "properties": {}
         }
       },
       "required": [
@@ -1022,7 +1181,7 @@ const TOOLS: OpenApiTool[] = [
       "properties": {
         "name": {
           "type": "string",
-          "description": "name property"
+          "description": "name parameter"
         }
       },
       "required": [
@@ -1053,7 +1212,7 @@ const TOOLS: OpenApiTool[] = [
         },
         "protocol": {
           "type": "string",
-          "description": "protocol property",
+          "description": "protocol parameter",
           "enum": [
             "TCP",
             "UDP",
@@ -1076,7 +1235,7 @@ const TOOLS: OpenApiTool[] = [
         },
         "source": {
           "type": "string",
-          "description": "source property",
+          "description": "source parameter",
           "enum": [
             "any",
             "custom"
@@ -1144,7 +1303,7 @@ const TOOLS: OpenApiTool[] = [
         },
         "protocol": {
           "type": "string",
-          "description": "protocol property",
+          "description": "protocol parameter",
           "enum": [
             "TCP",
             "UDP",
@@ -1167,7 +1326,7 @@ const TOOLS: OpenApiTool[] = [
         },
         "source": {
           "type": "string",
-          "description": "source property",
+          "description": "source parameter",
           "enum": [
             "any",
             "custom"
@@ -1362,7 +1521,11 @@ const TOOLS: OpenApiTool[] = [
         },
         "ids": {
           "type": "array",
-          "description": "Public Key IDs to attach"
+          "description": "Public Key IDs to attach",
+          "items": {
+            "type": "integer",
+            "description": "ids parameter"
+          }
         }
       },
       "required": [
@@ -1430,11 +1593,11 @@ const TOOLS: OpenApiTool[] = [
       "properties": {
         "name": {
           "type": "string",
-          "description": "name property"
+          "description": "name parameter"
         },
         "key": {
           "type": "string",
-          "description": "key property"
+          "description": "key parameter"
         }
       },
       "required": [
@@ -1666,7 +1829,7 @@ const TOOLS: OpenApiTool[] = [
         },
         "hostname": {
           "type": "string",
-          "description": "hostname property"
+          "description": "hostname parameter"
         }
       },
       "required": [
@@ -1858,11 +2021,11 @@ const TOOLS: OpenApiTool[] = [
         },
         "ns1": {
           "type": "string",
-          "description": "ns1 property"
+          "description": "ns1 parameter"
         },
         "ns2": {
           "type": "string",
-          "description": "ns2 property"
+          "description": "ns2 parameter"
         }
       },
       "required": [
@@ -2130,15 +2293,25 @@ const TOOLS: OpenApiTool[] = [
         },
         "ns1": {
           "type": "string",
-          "description": "ns1 property"
+          "description": "ns1 parameter"
         },
         "ns2": {
           "type": "string",
-          "description": "ns2 property"
+          "description": "ns2 parameter"
         },
         "public_key": {
           "type": "object",
-          "description": "public_key property"
+          "description": "public_key parameter",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the SSH key"
+            },
+            "key": {
+              "type": "string",
+              "description": "SSH public key"
+            }
+          }
         }
       },
       "required": [
@@ -2302,7 +2475,7 @@ const SECURITY_SCHEMES: Record<string, SecurityScheme> = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.38
+ * Generated from OpenAPI spec version 0.0.39
  */
 class MCPServer {
   private server: Server;
@@ -2324,7 +2497,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.16",
+        version: "0.0.17",
       },
       {
         capabilities: {
@@ -2349,7 +2522,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.16';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.17';
     
     return headers;
   }
