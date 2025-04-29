@@ -88,8 +88,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/billing/v1/payment-methods/{paymentMethodId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "paymentMethodId": {
+          "type": "integer",
+          "description": "Payment method ID"
+        }
+      },
+      "required": [
+        "paymentMethodId"
+      ]
     },
     "security": [
       {
@@ -104,8 +111,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/billing/v1/payment-methods/{paymentMethodId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "paymentMethodId": {
+          "type": "integer",
+          "description": "Payment method ID"
+        }
+      },
+      "required": [
+        "paymentMethodId"
+      ]
     },
     "security": [
       {
@@ -136,8 +150,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/billing/v1/subscriptions/{subscriptionId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "subscriptionId": {
+          "type": "string",
+          "description": "Subscription ID"
+        }
+      },
+      "required": [
+        "subscriptionId"
+      ]
     },
     "security": [
       {
@@ -168,8 +189,20 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/dns/v1/snapshots/{domain}/{snapshotId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
+        "snapshotId": {
+          "type": "integer",
+          "description": "Snapshot ID"
+        }
+      },
+      "required": [
+        "domain",
+        "snapshotId"
+      ]
     },
     "security": [
       {
@@ -184,8 +217,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/dns/v1/snapshots/{domain}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -200,8 +240,20 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/dns/v1/snapshots/{domain}/{snapshotId}/restore",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
+        "snapshotId": {
+          "type": "integer",
+          "description": "Snapshot ID"
+        }
+      },
+      "required": [
+        "domain",
+        "snapshotId"
+      ]
     },
     "security": [
       {
@@ -216,8 +268,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/dns/v1/zones/{domain}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -233,6 +292,10 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
         "overwrite": {
           "type": "boolean",
           "description": "If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created."
@@ -243,6 +306,7 @@ const TOOLS: OpenApiTool[] = [
         }
       },
       "required": [
+        "domain",
         "zone"
       ]
     },
@@ -259,8 +323,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/dns/v1/zones/{domain}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -276,6 +347,10 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
         "sync": {
           "type": "boolean",
           "description": "Determines if operation should be run synchronously"
@@ -289,7 +364,9 @@ const TOOLS: OpenApiTool[] = [
           "description": "Specifies which record types to not reset"
         }
       },
-      "required": []
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -305,6 +382,10 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
         "overwrite": {
           "type": "boolean",
           "description": "If `true`, resource records (RRs) matching name and type will be deleted and new RRs will be created, otherwise resource records' ttl's are updated and new records are appended. If no matching RRs are found, they are created."
@@ -315,6 +396,7 @@ const TOOLS: OpenApiTool[] = [
         }
       },
       "required": [
+        "domain",
         "zone"
       ]
     },
@@ -363,8 +445,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/forwarding/{domain}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -379,8 +468,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/forwarding/{domain}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -432,8 +528,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/portfolio/{domain}/domain-lock",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -448,8 +551,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/portfolio/{domain}/domain-lock",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -464,8 +574,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/portfolio/{domain}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -540,8 +657,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/portfolio/{domain}/privacy-protection",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -556,8 +680,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/portfolio/{domain}/privacy-protection",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        }
+      },
+      "required": [
+        "domain"
+      ]
     },
     "security": [
       {
@@ -573,6 +704,10 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Domain name"
+        },
         "ns1": {
           "type": "string",
           "description": "First name server"
@@ -591,6 +726,7 @@ const TOOLS: OpenApiTool[] = [
         }
       },
       "required": [
+        "domain",
         "ns1",
         "ns2"
       ]
@@ -608,8 +744,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/whois/{whoisId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "whoisId": {
+          "type": "integer",
+          "description": "WHOIS ID"
+        }
+      },
+      "required": [
+        "whoisId"
+      ]
     },
     "security": [
       {
@@ -624,8 +767,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/whois/{whoisId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "whoisId": {
+          "type": "integer",
+          "description": "WHOIS ID"
+        }
+      },
+      "required": [
+        "whoisId"
+      ]
     },
     "security": [
       {
@@ -640,7 +790,12 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/whois",
     "inputSchema": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "tld": {
+          "type": "string",
+          "description": "Filter by TLD (without trailing dot)"
+        }
+      },
       "required": []
     },
     "security": [
@@ -702,8 +857,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/domains/v1/whois/{whoisId}/usage",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "whoisId": {
+          "type": "integer",
+          "description": "WHOIS ID"
+        }
+      },
+      "required": [
+        "whoisId"
+      ]
     },
     "security": [
       {
@@ -734,8 +896,20 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/firewall/{firewallId}/activate/{virtualMachineId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "firewallId",
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -750,8 +924,20 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/firewall/{firewallId}/deactivate/{virtualMachineId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "firewallId",
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -766,8 +952,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/firewall/{firewallId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        }
+      },
+      "required": [
+        "firewallId"
+      ]
     },
     "security": [
       {
@@ -782,8 +975,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/firewall/{firewallId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        }
+      },
+      "required": [
+        "firewallId"
+      ]
     },
     "security": [
       {
@@ -798,7 +998,12 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/firewall",
     "inputSchema": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
       "required": []
     },
     "security": [
@@ -838,6 +1043,14 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "ruleId": {
+          "type": "integer",
+          "description": "Firewall Rule ID"
+        },
         "protocol": {
           "type": "string",
           "description": "protocol property",
@@ -875,6 +1088,8 @@ const TOOLS: OpenApiTool[] = [
         }
       },
       "required": [
+        "firewallId",
+        "ruleId",
         "protocol",
         "port",
         "source",
@@ -894,8 +1109,20 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/firewall/{firewallId}/rules/{ruleId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "ruleId": {
+          "type": "integer",
+          "description": "Firewall Rule ID"
+        }
+      },
+      "required": [
+        "firewallId",
+        "ruleId"
+      ]
     },
     "security": [
       {
@@ -911,6 +1138,10 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
         "protocol": {
           "type": "string",
           "description": "protocol property",
@@ -948,6 +1179,7 @@ const TOOLS: OpenApiTool[] = [
         }
       },
       "required": [
+        "firewallId",
         "protocol",
         "port",
         "source",
@@ -967,8 +1199,20 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/firewall/{firewallId}/sync/{virtualMachineId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "firewallId": {
+          "type": "integer",
+          "description": "Firewall ID"
+        },
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "firewallId",
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -983,8 +1227,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/post-install-scripts/{postInstallScriptId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "postInstallScriptId": {
+          "type": "integer",
+          "description": "Post-install script ID"
+        }
+      },
+      "required": [
+        "postInstallScriptId"
+      ]
     },
     "security": [
       {
@@ -1000,6 +1251,10 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "postInstallScriptId": {
+          "type": "integer",
+          "description": "Post-install script ID"
+        },
         "name": {
           "type": "string",
           "description": "Name of the script"
@@ -1010,6 +1265,7 @@ const TOOLS: OpenApiTool[] = [
         }
       },
       "required": [
+        "postInstallScriptId",
         "name",
         "content"
       ]
@@ -1027,8 +1283,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/post-install-scripts/{postInstallScriptId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "postInstallScriptId": {
+          "type": "integer",
+          "description": "Post-install script ID"
+        }
+      },
+      "required": [
+        "postInstallScriptId"
+      ]
     },
     "security": [
       {
@@ -1043,7 +1306,12 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/post-install-scripts",
     "inputSchema": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
       "required": []
     },
     "security": [
@@ -1088,12 +1356,17 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
         "ids": {
           "type": "array",
           "description": "Public Key IDs to attach"
         }
       },
       "required": [
+        "virtualMachineId",
         "ids"
       ]
     },
@@ -1110,8 +1383,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/public-keys/{publicKeyId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "publicKeyId": {
+          "type": "integer",
+          "description": "Public Key ID"
+        }
+      },
+      "required": [
+        "publicKeyId"
+      ]
     },
     "security": [
       {
@@ -1126,7 +1406,12 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/public-keys",
     "inputSchema": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
       "required": []
     },
     "security": [
@@ -1170,8 +1455,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/templates/{templateId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "templateId": {
+          "type": "integer",
+          "description": "Template ID"
+        }
+      },
+      "required": [
+        "templateId"
+      ]
     },
     "security": [
       {
@@ -1202,8 +1494,20 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/actions/{actionId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "actionId": {
+          "type": "integer",
+          "description": "Action ID"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "actionId"
+      ]
     },
     "security": [
       {
@@ -1218,8 +1522,19 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/actions",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1234,8 +1549,19 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/public-keys",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1250,8 +1576,20 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/backups/{backupId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "backupId": {
+          "type": "integer",
+          "description": "Backup ID"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "backupId"
+      ]
     },
     "security": [
       {
@@ -1266,8 +1604,19 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/backups",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "page": {
+          "type": "integer",
+          "description": "Page number"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1282,8 +1631,20 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/backups/{backupId}/restore",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
+        "backupId": {
+          "type": "integer",
+          "description": "Backup ID"
+        }
+      },
+      "required": [
+        "virtualMachineId",
+        "backupId"
+      ]
     },
     "security": [
       {
@@ -1299,12 +1660,17 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
         "hostname": {
           "type": "string",
           "description": "hostname property"
         }
       },
       "required": [
+        "virtualMachineId",
         "hostname"
       ]
     },
@@ -1321,8 +1687,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/hostname",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1337,8 +1710,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1369,8 +1749,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/monarx",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1385,8 +1772,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/monarx",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1401,8 +1795,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/monarx",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1418,6 +1819,10 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
         "date_from": {
           "type": "string",
           "description": "the date-time notation as defined by RFC 3339, section 5.6"
@@ -1428,6 +1833,7 @@ const TOOLS: OpenApiTool[] = [
         }
       },
       "required": [
+        "virtualMachineId",
         "date_from",
         "date_to"
       ]
@@ -1446,6 +1852,10 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
         "ns1": {
           "type": "string",
           "description": "ns1 property"
@@ -1456,6 +1866,7 @@ const TOOLS: OpenApiTool[] = [
         }
       },
       "required": [
+        "virtualMachineId",
         "ns1"
       ]
     },
@@ -1472,8 +1883,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/ptr",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1488,8 +1906,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/ptr",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1505,12 +1930,17 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
         "password": {
           "type": "string",
           "description": "Panel password for the virtual machine"
         }
       },
       "required": [
+        "virtualMachineId",
         "password"
       ]
     },
@@ -1528,12 +1958,17 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
         "root_password": {
           "type": "string",
           "description": "Temporary root password for recovery mode"
         }
       },
       "required": [
+        "virtualMachineId",
         "root_password"
       ]
     },
@@ -1550,8 +1985,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/recovery",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1567,6 +2009,10 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
         "template_id": {
           "type": "integer",
           "description": "Template ID"
@@ -1581,6 +2027,7 @@ const TOOLS: OpenApiTool[] = [
         }
       },
       "required": [
+        "virtualMachineId",
         "template_id"
       ]
     },
@@ -1597,8 +2044,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/restart",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1614,12 +2068,17 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
         "password": {
           "type": "string",
           "description": "Root password for the virtual machine"
         }
       },
       "required": [
+        "virtualMachineId",
         "password"
       ]
     },
@@ -1637,6 +2096,10 @@ const TOOLS: OpenApiTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        },
         "template_id": {
           "type": "integer",
           "description": "Template ID"
@@ -1679,6 +2142,7 @@ const TOOLS: OpenApiTool[] = [
         }
       },
       "required": [
+        "virtualMachineId",
         "data_center_id",
         "template_id"
       ]
@@ -1696,8 +2160,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1712,8 +2183,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1728,8 +2206,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1744,8 +2229,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot/restore",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1760,8 +2252,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/start",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1776,8 +2275,15 @@ const TOOLS: OpenApiTool[] = [
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/stop",
     "inputSchema": {
       "type": "object",
-      "properties": {},
-      "required": []
+      "properties": {
+        "virtualMachineId": {
+          "type": "integer",
+          "description": "Virtual Machine ID"
+        }
+      },
+      "required": [
+        "virtualMachineId"
+      ]
     },
     "security": [
       {
@@ -1818,7 +2324,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.14",
+        version: "0.0.15",
       },
       {
         capabilities: {
@@ -1843,7 +2349,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.14';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.15';
     
     return headers;
   }
