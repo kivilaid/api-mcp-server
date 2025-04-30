@@ -24,7 +24,20 @@ const TOOLS = [
     "path": "/api/billing/v1/catalog",
     "inputSchema": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "category": {
+          "type": "string",
+          "description": "Filter catalog items by category",
+          "enum": [
+            "DOMAIN",
+            "VPS"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "Filter catalog items by name. Use `*` for wildcard search."
+        }
+      },
       "required": []
     },
     "security": [
@@ -2459,7 +2472,7 @@ const SECURITY_SCHEMES = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.42
+ * Generated from OpenAPI spec version 0.0.44
  */
 class MCPServer {
   constructor() {
@@ -2477,7 +2490,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.18",
+        version: "0.0.19",
       },
       {
         capabilities: {
@@ -2502,7 +2515,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.18';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.19';
     
     return headers;
   }

@@ -127,7 +127,10 @@ Prices in catalog items is displayed as cents (without floating point), e.g: flo
 - **Method**: `GET`
 - **Path**: `/api/billing/v1/catalog`
 
+**Parameters**:
 
+- `category`: Filter catalog items by category 
+- `name`: Filter catalog items by name. Use `*` for wildcard search. 
 
 ### billing_createNewServiceOrderV1
 

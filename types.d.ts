@@ -11,7 +11,14 @@ Prices in catalog items is displayed as cents (without floating point), e.g: flo
    */
   "undefined": {
     params: {
-
+      /**
+       * Filter catalog items by category
+       */
+      category?: string;
+      /**
+       * Filter catalog items by name. Use `*` for wildcard search.
+       */
+      name?: string;
     };
     response: any; // Response structure will depend on the API
   };
