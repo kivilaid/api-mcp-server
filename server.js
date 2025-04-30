@@ -739,7 +739,7 @@ const TOOLS = [
   },
   {
     "name": "domains_purchaseNewDomainV1",
-    "description": "This endpoint purchases and registers new domain. If registration fails, login to hPanel and check the domain registration status.\n\nIf no payment method is provided, default will be used.\n\nIf no WHOIS information is provided, default for that TLD will be used. \nBefore making request make sure that WHOIS information for TLD exists.\n\nSome TLDs require `additional_details` to be provided and will be validated before making purchase.",
+    "description": "This endpoint allows you to buy (purchase) and register a new domain name. If registration fails, login to hPanel and check the domain registration status.\n\nIf no payment method is provided, your default payment method will be used automatically.\n\nIf no WHOIS information is provided, the default contact information for that TLD (Top-Level Domain) will be used. \nBefore making a request, ensure that WHOIS information for the desired TLD exists in your account.\n\nSome TLDs require `additional_details` to be provided and these will be validated before completing the purchase. The required additional details vary by TLD.",
     "method": "POST",
     "path": "/api/domains/v1/portfolio",
     "inputSchema": {
@@ -2472,7 +2472,7 @@ const SECURITY_SCHEMES = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.45
+ * Generated from OpenAPI spec version 0.0.46
  */
 class MCPServer {
   constructor() {
@@ -2490,7 +2490,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.20",
+        version: "0.0.21",
       },
       {
         capabilities: {
@@ -2515,7 +2515,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.20';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.21';
     
     return headers;
   }
