@@ -373,7 +373,7 @@ const TOOLS: OpenApiTool[] = [
             },
             "required": [
               "name",
-              "record",
+              "records",
               "type"
             ]
           }
@@ -519,7 +519,7 @@ const TOOLS: OpenApiTool[] = [
             },
             "required": [
               "name",
-              "record",
+              "records",
               "type"
             ]
           }
@@ -550,10 +550,10 @@ const TOOLS: OpenApiTool[] = [
         },
         "tlds": {
           "type": "array",
-          "description": "TLDs to check (without leading dot)",
+          "description": "TLDs list",
           "items": {
             "type": "string",
-            "description": "tlds parameter"
+            "description": "TLD without leading dot"
           }
         },
         "with_alternatives": {
@@ -2475,7 +2475,7 @@ const SECURITY_SCHEMES: Record<string, SecurityScheme> = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.39
+ * Generated from OpenAPI spec version 0.0.42
  */
 class MCPServer {
   private server: Server;
@@ -2497,7 +2497,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.17",
+        version: "0.0.18",
       },
       {
         capabilities: {
@@ -2522,7 +2522,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.17';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.18';
     
     return headers;
   }

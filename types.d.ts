@@ -271,7 +271,7 @@ Endpoint has rate limit of 10 requests per minute.
        */
       domain: string;
       /**
-       * TLDs to check (without leading dot)
+       * TLDs list
        */
       tlds: array;
       /**

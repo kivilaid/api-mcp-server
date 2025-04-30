@@ -325,7 +325,7 @@ Endpoint has rate limit of 10 requests per minute.
 **Parameters**:
 
 - `domain`: Domain name (without TLD) (required)
-- `tlds`: TLDs to check (without leading dot) (required)
+- `tlds`: TLDs list (required)
 - `with_alternatives`: Should response include alternatives 
 
 ### domains_getForwardingDataV1
