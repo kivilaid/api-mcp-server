@@ -16,7 +16,7 @@ Prices in catalog items is displayed as cents (without floating point), e.g: flo
        */
       category?: string;
       /**
-       * Filter catalog items by name. Use `*` for wildcard search.
+       * Filter catalog items by name. Use `*` for wildcard search, e.g. `.COM*` to find .com domain
        */
       name?: string;
     };

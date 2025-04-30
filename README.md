@@ -130,7 +130,7 @@ Prices in catalog items is displayed as cents (without floating point), e.g: flo
 **Parameters**:
 
 - `category`: Filter catalog items by category 
-- `name`: Filter catalog items by name. Use `*` for wildcard search. 
+- `name`: Filter catalog items by name. Use `*` for wildcard search, e.g. `.COM*` to find .com domain 
 
 ### billing_createNewServiceOrderV1
 
