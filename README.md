@@ -136,6 +136,13 @@ Prices in catalog items is displayed as cents (without floating point), e.g: flo
 
 This endpoint creates a new service order. 
 
+**DEPRECATED**
+
+To purchase a domain, use [`POST /api/domains/v1/portfolio`](/#tag/domains-portfolio/POST/api/domains/v1/portfolio) instead.
+
+To purchase a VPS, use [`POST /api/vps/v1/virtual-machines`](/#tag/vps-virtual-machine/POST/api/vps/v1/virtual-machines) instead.
+
+
 To place order, you need to provide payment method ID and list of price items from the catalog endpoint together with quantity.
 Coupons also can be provided during order creation.
 
@@ -412,7 +419,9 @@ This endpoint retrieves a list of all domains associated with your account.
 
 ### domains_purchaseNewDomainV1
 
-This endpoint allows you to buy (purchase) and register a new domain name. If registration fails, login to hPanel and check the domain registration status.
+This endpoint allows you to buy (purchase) and register a new domain name. 
+
+If registration fails, login to [hPanel](https://hpanel.hostinger.com/) and check the domain registration status.
 
 If no payment method is provided, your default payment method will be used automatically.
 
@@ -428,7 +437,7 @@ Some TLDs require `additional_details` to be provided and these will be validate
 
 - `domain`: Domain name (required)
 - `item_id`: Catalog price item ID (required)
-- `payment_method_id`: Payment method ID 
+- `payment_method_id`: Payment method ID, default will be used if not provided 
 - `domain_contacts`: Domain contact information 
 - `additional_details`: Additional registration data, possible values depends on TLD 
 - `coupons`: Discount coupon codes 
@@ -939,6 +948,24 @@ This endpoint retrieves a list of all available virtual machines.
 
 
 
+### VPS_purchaseNewVirtualMachineV1
+
+This endpoint allows you to buy (purchase) and setup a new virtual machine.
+
+If virtual machine setup fails for any reason, login to [hPanel](https://hpanel.hostinger.com/) and complete the setup manually.
+
+If no payment method is provided, your default payment method will be used automatically.                        
+
+- **Method**: `POST`
+- **Path**: `/api/vps/v1/virtual-machines`
+
+**Parameters**:
+
+- `item_id`: Catalog price item ID (required)
+- `payment_method_id`: Payment method ID, default will be used if not provided 
+- `setup`: setup parameter (required)
+- `coupons`: Discount coupon codes 
+
 ### VPS_getScanMetricsV1
 
 This endpoint retrieves the scan metrics for the [Monarx](https://www.monarx.com/) malware scanner installed on a specified virtual machine.
@@ -995,8 +1022,8 @@ It includes the following metrics:
 **Parameters**:
 
 - `virtualMachineId`: Virtual Machine ID (required)
-- `date_from`: the date-time notation as defined by RFC 3339, section 5.6 (required)
-- `date_to`: the date-time notation as defined by RFC 3339, section 5.6 (required)
+- `date_from`: date_from parameter (required)
+- `date_to`: date_to parameter (required)
 
 ### VPS_setNameserversV1
 
@@ -1133,8 +1160,7 @@ Requirements for the password is the same as in the [recreate virtual machine en
 
 ### VPS_setupNewVirtualMachineV1
 
-This endpoint will setup newly purchased virtual machine. Such virtual machines has `initial` state. 
-New virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/billing-orders/POST/api/billing/v1/orders) endpoint.                        
+This endpoint will setup newly purchased virtual machine with `initial` state. 
 
 - **Method**: `POST`
 - **Path**: `/api/vps/v1/virtual-machines/{virtualMachineId}/setup`
@@ -1149,9 +1175,9 @@ New virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/bill
 - `hostname`: Override default hostname of the virtual machine 
 - `install_monarx`: Install Monarx malware scanner (if supported) 
 - `enable_backups`: Enable weekly backup schedule 
-- `ns1`: ns1 parameter 
-- `ns2`: ns2 parameter 
-- `public_key`: public_key parameter 
+- `ns1`: Name server 1 
+- `ns2`: Name server 2 
+- `public_key`: Use SSH key 
 
 ### VPS_getSnapshotV1
 

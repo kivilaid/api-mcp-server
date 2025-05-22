@@ -26,6 +26,13 @@ Prices in catalog items is displayed as cents (without floating point), e.g: flo
   /**
    * This endpoint creates a new service order. 
 
+**DEPRECATED**
+
+To purchase a domain, use [`POST /api/domains/v1/portfolio`](/#tag/domains-portfolio/POST/api/domains/v1/portfolio) instead.
+
+To purchase a VPS, use [`POST /api/vps/v1/virtual-machines`](/#tag/vps-virtual-machine/POST/api/vps/v1/virtual-machines) instead.
+
+
 To place order, you need to provide payment method ID and list of price items from the catalog endpoint together with quantity.
 Coupons also can be provided during order creation.
 
@@ -388,7 +395,9 @@ before transferring the domain to another registrar.
   };
 
   /**
-   * This endpoint allows you to buy (purchase) and register a new domain name. If registration fails, login to hPanel and check the domain registration status.
+   * This endpoint allows you to buy (purchase) and register a new domain name. 
+
+If registration fails, login to [hPanel](https://hpanel.hostinger.com/) and check the domain registration status.
 
 If no payment method is provided, your default payment method will be used automatically.
 
@@ -408,7 +417,7 @@ Some TLDs require `additional_details` to be provided and these will be validate
        */
       item_id: string;
       /**
-       * Payment method ID
+       * Payment method ID, default will be used if not provided
        */
       payment_method_id?: number;
       /**
@@ -1110,6 +1119,35 @@ you need to point your domain A/AAAA records to virtual machine IP as well.
   };
 
   /**
+   * This endpoint allows you to buy (purchase) and setup a new virtual machine.
+
+If virtual machine setup fails for any reason, login to [hPanel](https://hpanel.hostinger.com/) and complete the setup manually.
+
+If no payment method is provided, your default payment method will be used automatically.                        
+   */
+  "undefined": {
+    params: {
+      /**
+       * Catalog price item ID
+       */
+      item_id: string;
+      /**
+       * Payment method ID, default will be used if not provided
+       */
+      payment_method_id?: number;
+      /**
+       * setup parameter
+       */
+      setup: string;
+      /**
+       * Discount coupon codes
+       */
+      coupons?: array;
+    };
+    response: any; // Response structure will depend on the API
+  };
+
+  /**
    * This endpoint retrieves the scan metrics for the [Monarx](https://www.monarx.com/) malware scanner installed on a specified virtual machine.
 The scan metrics provide detailed information about the malware scans performed by Monarx, including the number of scans, 
 detected threats, and other relevant statistics. This information is useful for monitoring the security status of the 
@@ -1171,11 +1209,11 @@ It includes the following metrics:
        */
       virtualMachineId: number;
       /**
-       * the date-time notation as defined by RFC 3339, section 5.6
+       * date_from parameter
        */
       date_from: string;
       /**
-       * the date-time notation as defined by RFC 3339, section 5.6
+       * date_to parameter
        */
       date_to: string;
     };
@@ -1358,8 +1396,7 @@ Requirements for the password is the same as in the [recreate virtual machine en
   };
 
   /**
-   * This endpoint will setup newly purchased virtual machine. Such virtual machines has `initial` state. 
-New virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/billing-orders/POST/api/billing/v1/orders) endpoint.                        
+   * This endpoint will setup newly purchased virtual machine with `initial` state. 
    */
   "undefined": {
     params: {
@@ -1396,15 +1433,15 @@ New virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/bill
        */
       enable_backups?: boolean;
       /**
-       * ns1 parameter
+       * Name server 1
        */
       ns1?: string;
       /**
-       * ns2 parameter
+       * Name server 2
        */
       ns2?: string;
       /**
-       * public_key parameter
+       * Use SSH key
        */
       public_key?: object;
     };

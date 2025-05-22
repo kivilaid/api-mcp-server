@@ -48,7 +48,7 @@ const TOOLS = [
   },
   {
     "name": "billing_createNewServiceOrderV1",
-    "description": "This endpoint creates a new service order. \n\nTo place order, you need to provide payment method ID and list of price items from the catalog endpoint together with quantity.\nCoupons also can be provided during order creation.\n\nOrders created using this endpoint will be set for automatic renewal.\n\nSome `credit_card` payments might need additional verification, rendering purchase unprocessed.\nWe recommend use other payment methods than `credit_card` if you encounter this issue.",
+    "description": "This endpoint creates a new service order. \n\n**DEPRECATED**\n\nTo purchase a domain, use [`POST /api/domains/v1/portfolio`](/#tag/domains-portfolio/POST/api/domains/v1/portfolio) instead.\n\nTo purchase a VPS, use [`POST /api/vps/v1/virtual-machines`](/#tag/vps-virtual-machine/POST/api/vps/v1/virtual-machines) instead.\n\n\nTo place order, you need to provide payment method ID and list of price items from the catalog endpoint together with quantity.\nCoupons also can be provided during order creation.\n\nOrders created using this endpoint will be set for automatic renewal.\n\nSome `credit_card` payments might need additional verification, rendering purchase unprocessed.\nWe recommend use other payment methods than `credit_card` if you encounter this issue.",
     "method": "POST",
     "path": "/api/billing/v1/orders",
     "inputSchema": {
@@ -739,7 +739,7 @@ const TOOLS = [
   },
   {
     "name": "domains_purchaseNewDomainV1",
-    "description": "This endpoint allows you to buy (purchase) and register a new domain name. If registration fails, login to hPanel and check the domain registration status.\n\nIf no payment method is provided, your default payment method will be used automatically.\n\nIf no WHOIS information is provided, the default contact information for that TLD (Top-Level Domain) will be used. \nBefore making a request, ensure that WHOIS information for the desired TLD exists in your account.\n\nSome TLDs require `additional_details` to be provided and these will be validated before completing the purchase. The required additional details vary by TLD.",
+    "description": "This endpoint allows you to buy (purchase) and register a new domain name. \n\nIf registration fails, login to [hPanel](https://hpanel.hostinger.com/) and check the domain registration status.\n\nIf no payment method is provided, your default payment method will be used automatically.\n\nIf no WHOIS information is provided, the default contact information for that TLD (Top-Level Domain) will be used. \nBefore making a request, ensure that WHOIS information for the desired TLD exists in your account.\n\nSome TLDs require `additional_details` to be provided and these will be validated before completing the purchase. The required additional details vary by TLD.",
     "method": "POST",
     "path": "/api/domains/v1/portfolio",
     "inputSchema": {
@@ -755,7 +755,7 @@ const TOOLS = [
         },
         "payment_method_id": {
           "type": "integer",
-          "description": "Payment method ID"
+          "description": "Payment method ID, default will be used if not provided"
         },
         "domain_contacts": {
           "type": "object",
@@ -1903,6 +1903,46 @@ const TOOLS = [
     ]
   },
   {
+    "name": "VPS_purchaseNewVirtualMachineV1",
+    "description": "This endpoint allows you to buy (purchase) and setup a new virtual machine.\n\nIf virtual machine setup fails for any reason, login to [hPanel](https://hpanel.hostinger.com/) and complete the setup manually.\n\nIf no payment method is provided, your default payment method will be used automatically.                        ",
+    "method": "POST",
+    "path": "/api/vps/v1/virtual-machines",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "item_id": {
+          "type": "string",
+          "description": "Catalog price item ID"
+        },
+        "payment_method_id": {
+          "type": "integer",
+          "description": "Payment method ID, default will be used if not provided"
+        },
+        "setup": {
+          "type": "string",
+          "description": "setup parameter"
+        },
+        "coupons": {
+          "type": "array",
+          "description": "Discount coupon codes",
+          "items": {
+            "type": "string",
+            "description": "coupons parameter"
+          }
+        }
+      },
+      "required": [
+        "item_id",
+        "setup"
+      ]
+    },
+    "security": [
+      {
+        "apiToken": []
+      }
+    ]
+  },
+  {
     "name": "VPS_getScanMetricsV1",
     "description": "This endpoint retrieves the scan metrics for the [Monarx](https://www.monarx.com/) malware scanner installed on a specified virtual machine.\nThe scan metrics provide detailed information about the malware scans performed by Monarx, including the number of scans, \ndetected threats, and other relevant statistics. This information is useful for monitoring the security status of the \nvirtual machine and assessing the effectiveness of the malware scanner.",
     "method": "GET",
@@ -1985,11 +2025,11 @@ const TOOLS = [
         },
         "date_from": {
           "type": "string",
-          "description": "the date-time notation as defined by RFC 3339, section 5.6"
+          "description": "date_from parameter"
         },
         "date_to": {
           "type": "string",
-          "description": "the date-time notation as defined by RFC 3339, section 5.6"
+          "description": "date_to parameter"
         }
       },
       "required": [
@@ -2250,7 +2290,7 @@ const TOOLS = [
   },
   {
     "name": "VPS_setupNewVirtualMachineV1",
-    "description": "This endpoint will setup newly purchased virtual machine. Such virtual machines has `initial` state. \nNew virtual machine can be purchased using [`/api/billing/v1/orders`](/#tag/billing-orders/POST/api/billing/v1/orders) endpoint.                        ",
+    "description": "This endpoint will setup newly purchased virtual machine with `initial` state. ",
     "method": "POST",
     "path": "/api/vps/v1/virtual-machines/{virtualMachineId}/setup",
     "inputSchema": {
@@ -2290,15 +2330,15 @@ const TOOLS = [
         },
         "ns1": {
           "type": "string",
-          "description": "ns1 parameter"
+          "description": "Name server 1"
         },
         "ns2": {
           "type": "string",
-          "description": "ns2 parameter"
+          "description": "Name server 2"
         },
         "public_key": {
           "type": "object",
-          "description": "public_key parameter",
+          "description": "Use SSH key",
           "properties": {
             "name": {
               "type": "string",
@@ -2306,7 +2346,7 @@ const TOOLS = [
             },
             "key": {
               "type": "string",
-              "description": "SSH public key"
+              "description": "Contents of the SSH key"
             }
           }
         }
@@ -2472,7 +2512,7 @@ const SECURITY_SCHEMES = {
 
 /**
  * MCP Server for Hostinger API
- * Generated from OpenAPI spec version 0.0.46
+ * Generated from OpenAPI spec version 0.0.60
  */
 class MCPServer {
   constructor() {
@@ -2490,7 +2530,7 @@ class MCPServer {
     this.server = new Server(
       {
         name: "hostinger-api-mcp",
-        version: "0.0.21",
+        version: "0.0.22",
       },
       {
         capabilities: {
@@ -2515,7 +2555,7 @@ class MCPServer {
       });
     }
     
-    headers['User-Agent'] = 'hostinger-mcp-server/0.0.21';
+    headers['User-Agent'] = 'hostinger-mcp-server/0.0.22';
     
     return headers;
   }
