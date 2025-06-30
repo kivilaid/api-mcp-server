@@ -42,6 +42,3 @@ coverage/
 .github/
 .gitlab-ci.yml
 .travis.yml
-
-# Smithery config (not needed in container)
-smithery.yml
