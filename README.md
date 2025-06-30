@@ -64,6 +64,7 @@ The following environment variables can be configured when running the server:
     "mcpServers": {
         "hostinger-api": {
             "command": "hostinger-api-mcp",
+            "args": ["--http"],
             "env": {
                 "DEBUG": "false",
                 "APITOKEN": "YOUR API TOKEN"
@@ -73,43 +74,77 @@ The following environment variables can be configured when running the server:
 }
 ```
 
-### Using SSE Transport
+### Transport Options
 
-To use the MCP server with SSE transport, you must run the server with the `--sse` option. 
-This will enable the server to communicate with clients using Server-Sent Events on localhost port 8100.
-Additionally, you can specify the `--host` and `--port` options to set the host and port for the server to listen on.
+The MCP server supports two transport modes:
 
-Example of running the server with SSE transport:
+#### HTTP Streaming Transport (Default)
+
+The server uses HTTP streaming transport by default. This provides bidirectional streaming over HTTP with Server-Sent Events (SSE).
+
+```bash
+# Default HTTP transport on localhost:8100
+hostinger-api-mcp
+
+# Specify custom host and port
+hostinger-api-mcp --host 0.0.0.0 --port 3000
+```
+
+#### SSE Transport
+
+To use the legacy SSE transport, use the `--sse` option:
 
 ```bash
 hostinger-api-mcp --sse --host 127.0.0.1 --port 8100
 ```
 
+### Command Line Options
+
+```
+Options:
+  --http           Use HTTP streaming transport (default)
+  --sse            Use Server-Sent Events transport
+  --host <host>    Host to bind to (default: 127.0.0.1)
+  --port <port>    Port to bind to (default: 8100)
+  --help           Show help message
+```
+
 ### Using as an MCP Tool Provider
 
-This server implements the Model Context Protocol (MCP) and can be used with any MCP-compatible consumer, like Claude.js client or other MCP consumers.
+This server implements the Model Context Protocol (MCP) and can be used with any MCP-compatible consumer.
 
-Example of connecting to this server from a Claude.js client:
+Example of connecting using HTTP transport:
 
 ```javascript
-import { MCP } from "claude-js";
-import { createStdio } from "claude-js/mcp";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
-// Create stdin/stdout transport
-const transport = createStdio({ command: "hostinger-api-mcp" });
+// Create HTTP transport
+const transport = new StreamableHTTPClientTransport({
+  url: "http://localhost:8100/",
+  headers: {
+    "Authorization": `Bearer ${process.env.APITOKEN}`
+  }
+});
 
 // Connect to the MCP server
-const mcp = new MCP({ transport });
-await mcp.connect();
+const client = new Client({
+  name: "my-client",
+  version: "1.0.0"
+}, {
+  capabilities: {}
+});
+
+await client.connect(transport);
 
 // List available tools
-const { tools } = await mcp.listTools();
+const { tools } = await client.listTools();
 console.log("Available tools:", tools);
 
 // Call a tool
-const result = await mcp.callTool({
-    id: "TOOL-ID",
-    arguments: { param1: "value1" }
+const result = await client.callTool({
+  name: "billing_getCatalogItemListV1",
+  arguments: { category: "DOMAIN" }
 });
 console.log("Tool result:", result);
 ```

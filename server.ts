@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import express from "express";
 import {Request, Response} from "express";
+import cors from "cors";
+import minimist from "minimist";
 import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from "axios";
 import { config as dotenvConfig } from "dotenv";
 import {
@@ -2835,13 +2837,68 @@ class MCPServer {
   }
   
   /**
-   * Start the sse server
+   * Create and configure Express app with shared middleware
+   */
+  private createApp(): express.Application {
+    const app = express();
+    app.use(express.json());
+    app.use(cors());
+    return app;
+  }
+
+  /**
+   * Start the server with HTTP streaming transport
+   */
+  async startHttp(host: string, port: number): Promise<void> {
+    try {
+      const app = this.createApp();
+      
+      // Create HTTP transport with session management
+      const httpTransport = new StreamableHTTPServerTransport({
+        sessionIdGenerator: () => {
+          // Generate a simple session ID
+          return `session-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+        },
+        enableJsonResponse: false  // Use SSE streaming
+      });
+      
+      // Set up CORS for all routes
+      app.options("*", (req, res) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, x-session-id");
+        res.sendStatus(200);
+      });
+      
+      // Set up the HTTP transport endpoint
+      app.post("/", async (req, res) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, x-session-id");
+        await httpTransport.handleRequest(req, res, req.body);
+      });
+      
+      // Start the server
+      const server = app.listen(port, host, () => {
+        this.log('info', `MCP Server with HTTP streaming transport started successfully with ${this.tools.size} tools`);
+        this.log('info', `Listening on http://${host}:${port}`);
+      });
+      
+      // Connect the MCP server to the transport
+      await this.server.connect(httpTransport);
+      
+    } catch (error) {
+      console.error("Failed to start MCP server:", error);
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Start the server with SSE transport
    */
   async startSse(host: string, port: number): Promise<void> {
     try {
-      // Create sse transport
-      const app = express();
-      app.use(express.json());
+      const app = this.createApp();
 
       let transport: SSEServerTransport;
       const sessions = {} as Record<string, SSEServerTransport>;
@@ -2874,27 +2931,6 @@ class MCPServer {
       console.error("Failed to start MCP server:", error);
       process.exit(1);
     }
-  }  
-
-  /**
-   * Start the stdio server
-   */
-  async startStdio(): Promise<void> {
-    try {
-      // Create stdio transport
-      const transport = new StdioServerTransport();
-      console.error("MCP Server starting on stdio transport");
-
-      // Connect to the transport
-      await this.server.connect(transport);
-
-      // Now we can safely log via MCP
-      console.error(`Registered ${this.tools.size} tools`);
-      this.log('info', `MCP Server with stdio transport started successfully with ${this.tools.size} tools`);
-    } catch (error) {
-      console.error("Failed to start MCP server:", error);
-      process.exit(1);
-    }
   }
 }
 
@@ -2902,21 +2938,48 @@ class MCPServer {
 async function main(): Promise<void> {
   try {
     const argv = minimist(process.argv.slice(2), { 
-        string: ['host'], 
-        int: ['port'], 
-        boolean: ['sse'],
+        string: ['host', 'port'], 
+        boolean: ['sse', 'http', 'help'],
         default: {
             host: '127.0.0.1',
-            port: 8100,
+            port: '8100',
+            http: true  // HTTP is now the default
         }
-    });
+    }) as any;
+    
+    // Show help if requested
+    if (argv.help) {
+      console.log(`
+Hostinger API MCP Server
+
+Usage: hostinger-api-mcp [options]
+
+Options:
+  --http           Use HTTP streaming transport (default)
+  --sse            Use Server-Sent Events transport
+  --host <host>    Host to bind to (default: 127.0.0.1)
+  --port <port>    Port to bind to (default: 8100)
+  --help           Show this help message
+
+Environment Variables:
+  APITOKEN         Your Hostinger API token (required)
+  DEBUG            Enable debug logging (true/false)
+  API_BASE_URL     Base URL for API (default: https://developers.hostinger.com)
+`);
+      process.exit(0);
+    }
     
     const server = new MCPServer();
     
+    // Parse port as number
+    const port = parseInt(argv.port, 10) || 8100;
+    
+    // Determine which transport to use
     if (argv.sse) {
-        await server.startSse(argv.host, argv.port);
+      await server.startSse(argv.host, port);
     } else {
-        await server.startStdio();
+      // Default to HTTP transport
+      await server.startHttp(argv.host, port);
     }
   } catch (error) {
     console.error("Failed to start server:", error);
