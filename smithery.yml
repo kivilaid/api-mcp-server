@@ -1,0 +1,148 @@
+name: hostinger-api-mcp
+version: 0.0.26
+description: MCP server for Hostinger API - manage domains, DNS, billing, and VPS through Model Context Protocol
+author: Hostinger
+license: MIT
+keywords:
+  - hostinger
+  - mcp
+  - api
+  - domains
+  - dns
+  - vps
+  - billing
+
+# MCP server configuration
+mcp:
+  # Server binary/command
+  command: hostinger-api-mcp
+  
+  # Default arguments
+  args:
+    - --http
+  
+  # Transport configuration
+  transports:
+    - type: http
+      default: true
+      description: HTTP streaming transport with SSE (default)
+      port: 8100
+    - type: sse
+      description: Legacy Server-Sent Events transport
+      port: 8100
+  
+  # Required environment variables
+  env:
+    required:
+      - name: APITOKEN
+        description: Your Hostinger API token for authentication
+    optional:
+      - name: DEBUG
+        description: Enable debug logging (true/false)
+        default: "false"
+      - name: API_BASE_URL
+        description: Base URL for Hostinger API
+        default: "https://developers.hostinger.com"
+
+# Installation methods
+install:
+  npm:
+    global: true
+    package: hostinger-api-mcp
+  
+  docker:
+    image: hostinger/api-mcp-server
+    ports:
+      - "8100:8100"
+    environment:
+      - APITOKEN
+
+# Tool categories
+tools:
+  categories:
+    - name: billing
+      description: Manage billing, subscriptions, and payment methods
+      tools:
+        - billing_getCatalogItemListV1
+        - billing_getPaymentMethodListV1
+        - billing_getSubscriptionListV1
+        - billing_cancelSubscriptionV1
+        - billing_setDefaultPaymentMethodV1
+        - billing_deletePaymentMethodV1
+    
+    - name: dns
+      description: Manage DNS zones and records
+      tools:
+        - DNS_getRecordsV1
+        - DNS_updateZoneRecordsV1
+        - DNS_deleteZoneRecordsV1
+        - DNS_resetZoneRecordsV1
+        - DNS_validateZoneRecordsV1
+        - DNS_getSnapshotListV1
+        - DNS_getSnapshotV1
+        - DNS_restoreSnapshotV1
+    
+    - name: domains
+      description: Manage domain registration and configuration
+      tools:
+        - domains_checkDomainAvailabilityV1
+        - domains_purchaseNewDomainV1
+        - domains_getDomainListV1
+        - domains_getDomainV1
+        - domains_updateNameserversV1
+        - domains_enableDomainLockV1
+        - domains_disableDomainLockV1
+        - domains_enablePrivacyProtectionV1
+        - domains_disablePrivacyProtectionV1
+        - domains_getWHOISProfileListV1
+        - domains_createWHOISProfileV1
+    
+    - name: vps
+      description: Manage Virtual Private Servers
+      tools:
+        - VPS_getVirtualMachineListV1
+        - VPS_getVirtualMachineV1
+        - VPS_purchaseNewVirtualMachineV1
+        - VPS_startVirtualMachineV1
+        - VPS_stopVirtualMachineV1
+        - VPS_restartVirtualMachineV1
+        - VPS_getTemplateListV1
+        - VPS_getDataCentersListV1
+        - VPS_createSnapshotV1
+        - VPS_restoreSnapshotV1
+        - VPS_getBackupListV1
+        - VPS_restoreBackupV1
+
+# Documentation
+docs:
+  readme: README.md
+  examples:
+    - name: "Check domain availability"
+      description: "Check if a domain name is available for registration"
+      tool: domains_checkDomainAvailabilityV1
+      params:
+        domain: "example"
+        tlds: ["com", "net", "org"]
+    
+    - name: "List VPS instances"
+      description: "Get a list of all your virtual machines"
+      tool: VPS_getVirtualMachineListV1
+      params: {}
+    
+    - name: "Update DNS records"
+      description: "Update DNS records for a domain"
+      tool: DNS_updateZoneRecordsV1
+      params:
+        domain: "example.com"
+        zone:
+          - name: "@"
+            type: "A"
+            ttl: 300
+            records:
+              - content: "192.168.1.1"
+
+# Repository information
+repository:
+  type: git
+  url: https://github.com/hostinger/api-mcp-server
+  issues: https://github.com/hostinger/api-mcp-server/issues

@@ -1,0 +1,47 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Development files
+*.ts
+tsconfig.json
+build.js
+.env
+.env.*
+
+# Build output
+dist/
+
+# Documentation
+CLAUDE.md
+*.md
+!README.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test files
+coverage/
+.nyc_output/
+*.test.js
+*.spec.js
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Smithery config (not needed in container)
+smithery.yml

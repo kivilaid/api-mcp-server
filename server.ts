@@ -2870,6 +2870,11 @@ class MCPServer {
         res.sendStatus(200);
       });
       
+      // Health check endpoint
+      app.get("/health", (req, res) => {
+        res.status(200).json({ status: "ok", transport: "http" });
+      });
+      
       // Set up the HTTP transport endpoint
       app.post("/", async (req, res) => {
         res.header("Access-Control-Allow-Origin", "*");
@@ -2902,6 +2907,11 @@ class MCPServer {
 
       let transport: SSEServerTransport;
       const sessions = {} as Record<string, SSEServerTransport>;
+
+      // Health check endpoint
+      app.get("/health", (req: Request, res: Response) => {
+        res.status(200).json({ status: "ok", transport: "sse" });
+      });
 
       app.get('/sse', (req: Request, res: Response) => {
         transport = new SSEServerTransport('/messages', res);
